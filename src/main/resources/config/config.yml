@@ -1,0 +1,5 @@
+saveIntervalSeconds: 60 * 15
+incrementIntervalTicks: 10
+calendarBucketKeyUpdateIntervalSeconds: 5
+timeZoneId: 'Europe/Berlin'
+ranks:

@@ -1,0 +1,15 @@
+name: PlaytimeRankup
+version: ${project.version}
+main: at.blvckbytes.playtime_rankup.PlaytimeRankupPlugin
+author: BlvckBytes
+api-version: 26.1
+depend: [Essentials, LuckPerms]
+commands:
+  playtime:
+    description: Check your current playtime and AFK time
+  rewards:
+    description: View your available rewards
+  playtop:
+    description: View the top leaderboards for playtime
+  afktop:
+    description: View the top leaderboards for AFK time
