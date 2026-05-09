@@ -21,7 +21,6 @@ import java.util.logging.Level;
 
 public class PlaytimeRankupPlugin extends JavaPlugin {
 
-  // TODO: Top-10 variables in PAPI
   // TODO: Rewards-display with live statistics (redraw every tick)
 
   private @Nullable UserDataStore userDataStore;
@@ -47,6 +46,9 @@ public class PlaytimeRankupPlugin extends JavaPlugin {
         throw new IllegalStateException("Expected Essentials to be loaded");
 
       userDataStore = new UserDataStore(new CalendarInfoProvider(config, this), config, this);
+
+      if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI"))
+        new PlaytimePlaceholderExpansion(this, userDataStore).register();
 
       var rankupManager = new RankupManager(userDataStore, luckPerms, essentials, config, this);
       getServer().getPluginManager().registerEvents(rankupManager, this);

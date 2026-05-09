@@ -4,6 +4,7 @@ main: at.blvckbytes.playtime_rankup.PlaytimeRankupPlugin
 author: BlvckBytes
 api-version: 26.1
 depend: [Essentials, LuckPerms]
+softdepend: [PlaceholderAPI]
 commands:
   playtime:
     description: Check your current playtime and AFK time
