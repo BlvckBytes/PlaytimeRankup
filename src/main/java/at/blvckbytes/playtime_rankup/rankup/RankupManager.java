@@ -5,6 +5,7 @@ import at.blvckbytes.cm_mapper.ReloadPriority;
 import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
 import at.blvckbytes.playtime_rankup.config.MainSection;
 import at.blvckbytes.playtime_rankup.config.RankSection;
+import at.blvckbytes.playtime_rankup.store.TimeType;
 import at.blvckbytes.playtime_rankup.store.UserDataStore;
 import net.ess3.api.IEssentials;
 import net.luckperms.api.LuckPerms;
@@ -102,7 +103,7 @@ public class RankupManager implements Listener {
 
   private void checkRankupFor(Iterable<PlayerAndMeta> players) {
     for (var player : players) {
-      var playTime = player.userData.getGlobalPlayTimeTicks();
+      var playTime = player.userData.getGlobalTimeTicks(TimeType.PLAY_TIME);
 
       for (var rank : config.rootSection.rankList) {
         if (rank.group == null)

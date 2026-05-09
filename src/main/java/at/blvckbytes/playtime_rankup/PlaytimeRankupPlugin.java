@@ -2,7 +2,9 @@ package at.blvckbytes.playtime_rankup;
 
 import at.blvckbytes.cm_mapper.ConfigHandler;
 import at.blvckbytes.cm_mapper.ConfigKeeper;
+import at.blvckbytes.playtime_rankup.command.AfkTopCommand;
 import at.blvckbytes.playtime_rankup.command.OfflinePlayerRegistry;
+import at.blvckbytes.playtime_rankup.command.PlayTopCommand;
 import at.blvckbytes.playtime_rankup.command.PlaytimeCommand;
 import at.blvckbytes.playtime_rankup.config.MainSection;
 import at.blvckbytes.playtime_rankup.rankup.RankupManager;
@@ -19,10 +21,8 @@ import java.util.logging.Level;
 
 public class PlaytimeRankupPlugin extends JavaPlugin {
 
-  // TODO: Top-10 commands
   // TODO: Top-10 variables in PAPI
   // TODO: Rewards-display with live statistics (redraw every tick)
-  // TODO: Idea - also track daily, weekly, monthly and yearly playtime
 
   private @Nullable UserDataStore userDataStore;
 
@@ -55,6 +55,8 @@ public class PlaytimeRankupPlugin extends JavaPlugin {
       getServer().getPluginManager().registerEvents(offlinePlayerRegistry, this);
 
       Objects.requireNonNull(getCommand("playtime")).setExecutor(new PlaytimeCommand(userDataStore, offlinePlayerRegistry));
+      Objects.requireNonNull(getCommand("playtop")).setExecutor(new PlayTopCommand(userDataStore));
+      Objects.requireNonNull(getCommand("afktop")).setExecutor(new AfkTopCommand(userDataStore));
     } catch (Throwable e) {
       logger.log(Level.SEVERE, "An error occurred while trying to enable the plugin; disabling!", e);
       Bukkit.getPluginManager().disablePlugin(this);

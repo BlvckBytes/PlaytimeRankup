@@ -16,12 +16,11 @@ public class TimeStatistics {
       throw new IllegalStateException("Property \"afkTimeTicks\" is negative");
   }
 
-  public long getPlayTimeTicks() {
-    return playTimeTicks;
-  }
-
-  public long getAfkTimeTicks() {
-    return afkTimeTicks;
+  public long getTime(TimeType timeType) {
+    return switch (timeType) {
+      case PLAY_TIME -> playTimeTicks;
+      case AFK_TIME -> afkTimeTicks;
+    };
   }
 
   public void incrementPlayTimeTicks(int value) {

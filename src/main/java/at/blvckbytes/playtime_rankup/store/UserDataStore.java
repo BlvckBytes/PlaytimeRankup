@@ -8,20 +8,22 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class UserDataStore {
 
   private final CalendarInfoProvider calendarInfoProvider;
+  private final ConfigKeeper<MainSection> config;
   private final Logger logger;
   private final File userDataFolder;
+
   private final Map<UUID, UserData> userDataByPlayerId;
+  private final EnumMap<TopListType, EnumMap<TimeType, List<UserData>>> topListByTimeTypeByListType;
 
   private long lastSaveStamp;
+  private long lastTopListUpdateStamp;
   private long lastCalendarBucketKeyUpdateStamp;
 
   public UserDataStore(
@@ -30,6 +32,7 @@ public class UserDataStore {
     Plugin plugin
   ) {
     this.calendarInfoProvider = calendarInfoProvider;
+    this.config = config;
     this.logger = plugin.getLogger();
     this.userDataFolder = new File(plugin.getDataFolder(), "userdata");
 
@@ -42,6 +45,7 @@ public class UserDataStore {
       throw new IllegalStateException("Expected a directory at " + userDataFolder);
 
     this.userDataByPlayerId = new HashMap<>();
+    this.topListByTimeTypeByListType = new EnumMap<>(TopListType.class);
 
     Bukkit.getScheduler().runTaskTimer(plugin, () -> {
       var now = System.currentTimeMillis();
@@ -51,13 +55,49 @@ public class UserDataStore {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, this::saveAllDirty);
       }
 
+      if (now - lastTopListUpdateStamp >= config.rootSection.topListUpdateIntervalSeconds * 1000L) {
+        lastTopListUpdateStamp = now;
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, this::updateTopLists);
+      }
+
       if (now - lastCalendarBucketKeyUpdateStamp >= config.rootSection.calendarBucketKeyUpdateIntervalSeconds * 1000L) {
         lastCalendarBucketKeyUpdateStamp = now;
         Bukkit.getScheduler().runTaskAsynchronously(plugin, this::updateAllKeys);
       }
     }, 0, 0);
 
-    Bukkit.getScheduler().runTaskAsynchronously(plugin, this::loadAll);
+    Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+      loadAll();
+      updateTopLists();
+    });
+  }
+
+  private void updateTopLists() {
+    var userDataValues = new ArrayList<>(userDataByPlayerId.values());
+
+    for (TopListType topType : TopListType.ALL_VALUES) {
+      for (TimeType timeType : TimeType.ALL_VALUES) {
+        userDataValues.sort((a, b) -> -Long.compare(topType.accessStatistic(a, timeType), topType.accessStatistic(b, timeType)));
+
+        topListByTimeTypeByListType
+          .computeIfAbsent(topType, _ -> new EnumMap<>(TimeType.class))
+          .put(timeType, firstNOfList(userDataValues, config.rootSection.maxTopListSize));
+      }
+    }
+  }
+
+  public List<UserData> getTopList(TopListType type, TimeType timeType) {
+    var listTypeBucket = topListByTimeTypeByListType.get(type);
+
+    if (listTypeBucket == null)
+      return Collections.emptyList();
+
+    var topList = listTypeBucket.get(timeType);
+
+    if (topList == null)
+      return Collections.emptyList();
+
+    return Collections.unmodifiableList(topList);
   }
 
   public void onDisable() {
@@ -121,7 +161,10 @@ public class UserDataStore {
 
           // Better safe than sorry - playtime can absolutely not be lost and if we failed loading, we'll zero-initialize
           // on the first access-call, so we'd erase the player's progress; this way, a human can manually merge later on.
-          if (writtenUserData.getGlobalPlayTimeTicks() > userData.getGlobalPlayTimeTicks() || writtenUserData.getGlobalAfkTimeTicks() > userData.getGlobalAfkTimeTicks()) {
+          if (
+            writtenUserData.getGlobalTimeTicks(TimeType.PLAY_TIME) > userData.getGlobalTimeTicks(TimeType.PLAY_TIME)
+              || writtenUserData.getGlobalTimeTicks(TimeType.AFK_TIME) > userData.getGlobalTimeTicks(TimeType.AFK_TIME)
+          ) {
             logger.severe("Stored statistics in file " + dataFile + " exceed about-to-be-saved; skipping write of " + sanitizeControlCharacters(dataString));
             continue;
           }
@@ -283,5 +326,16 @@ public class UserDataStore {
     }
 
     return builder.toString();
+  }
+
+  private static <T> List<T> firstNOfList(List<T> list, int n) {
+    var result = new ArrayList<T>(n);
+
+    var actualAmount = Math.min(list.size(), n);
+
+    for (var listIndex = 0; listIndex < actualAmount; ++listIndex)
+      result.add(list.get(listIndex));
+
+    return result;
   }
 }

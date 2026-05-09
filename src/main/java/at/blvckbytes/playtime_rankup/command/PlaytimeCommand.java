@@ -1,6 +1,7 @@
 package at.blvckbytes.playtime_rankup.command;
 
 import at.blvckbytes.playtime_rankup.store.CalendarBucket;
+import at.blvckbytes.playtime_rankup.store.TimeType;
 import at.blvckbytes.playtime_rankup.store.UserDataStore;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -59,10 +60,10 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
 
     // TODO: Config-message (with isSelf)
 
-    sender.sendMessage("§a" + target.getName() + "'s total playtime is " + data.getGlobalPlayTimeTicks() + ", their total afk-time is " + data.getGlobalAfkTimeTicks());
+    sender.sendMessage("§a" + target.getName() + "'s total playtime is " + data.getGlobalTimeTicks(TimeType.PLAY_TIME) + ", their total afk-time is " + data.getGlobalTimeTicks(TimeType.AFK_TIME));
 
     for (CalendarBucket calendarBucket : CalendarBucket.ALL_VALUES)
-      sender.sendMessage("§a" + calendarBucket.name() + " playtime is " + data.getCalendarBucketPlayTimeTicks(calendarBucket) + ", afk-time is " + data.getCalendarBucketAfkTimeTicks(calendarBucket));
+      sender.sendMessage("§a" + calendarBucket.name() + " playtime is " + data.getCalendarBucketTimeTicks(calendarBucket, TimeType.PLAY_TIME) + ", afk-time is " + data.getCalendarBucketTimeTicks(calendarBucket, TimeType.AFK_TIME));
 
     return true;
   }

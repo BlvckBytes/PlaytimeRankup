@@ -38,6 +38,18 @@ public class UserData {
       throw new IllegalStateException("Array \"statisticsByCalendarBucketOrdinal\" does not hold as many values as there are bucket-types");
   }
 
+  public long getGlobalTimeTicks(TimeType timeType) {
+    return globalStatistics.getTime(timeType);
+  }
+
+  public long getCalendarBucketTimeTicks(CalendarBucket calendarBucket, TimeType timeType) {
+    return statisticsByCalendarBucketOrdinal[calendarBucket.ordinal()].getTime(timeType);
+  }
+
+  public String getLastKnownName() {
+    return lastKnownName;
+  }
+
   public void updateLastKnownName(String name) {
     if (name.equals(lastKnownName))
       return;
@@ -53,10 +65,6 @@ public class UserData {
     }
   }
 
-  public long getGlobalPlayTimeTicks() {
-    return globalStatistics.getPlayTimeTicks();
-  }
-
   public void incrementPlayTimeTicks(int value, CalendarInfoProvider calendarInfoProvider) {
     globalStatistics.incrementPlayTimeTicks(value);
 
@@ -68,10 +76,6 @@ public class UserData {
     }
 
     dirty = true;
-  }
-
-  public long getGlobalAfkTimeTicks() {
-    return globalStatistics.getAfkTimeTicks();
   }
 
   public void incrementAfkTimeTicks(int value, CalendarInfoProvider calendarInfoProvider) {
@@ -87,14 +91,6 @@ public class UserData {
     dirty = true;
   }
 
-  public long getCalendarBucketPlayTimeTicks(CalendarBucket calendarBucket) {
-    return statisticsByCalendarBucketOrdinal[calendarBucket.ordinal()].getPlayTimeTicks();
-  }
-
-  public long getCalendarBucketAfkTimeTicks(CalendarBucket calendarBucket) {
-    return statisticsByCalendarBucketOrdinal[calendarBucket.ordinal()].getAfkTimeTicks();
-  }
-
   public boolean isDirty() {
     return dirty;
   }
@@ -106,16 +102,16 @@ public class UserData {
   public String serialize() {
     var temporaryConfig = new YamlConfiguration();
 
-    temporaryConfig.set("playTimeTicks", globalStatistics.getPlayTimeTicks());
-    temporaryConfig.set("afkTimeTicks", globalStatistics.getAfkTimeTicks());
+    temporaryConfig.set("playTimeTicks", globalStatistics.getTime(TimeType.PLAY_TIME));
+    temporaryConfig.set("afkTimeTicks", globalStatistics.getTime(TimeType.AFK_TIME));
     temporaryConfig.set("lastKnownName", lastKnownName);
 
     for (var calendarBucket : CalendarBucket.ALL_VALUES) {
       var bucketSection = temporaryConfig.createSection("calendarBuckets." + calendarBucket.name());
       var bucketStatistics = statisticsByCalendarBucketOrdinal[calendarBucket.ordinal()];
 
-      bucketSection.set("playTimeTicks", bucketStatistics.getPlayTimeTicks());
-      bucketSection.set("afkTimeTicks", bucketStatistics.getAfkTimeTicks());
+      bucketSection.set("playTimeTicks", bucketStatistics.getTime(TimeType.PLAY_TIME));
+      bucketSection.set("afkTimeTicks", bucketStatistics.getTime(TimeType.AFK_TIME));
       bucketSection.set("key", bucketStatistics.key);
     }
 

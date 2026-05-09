@@ -19,6 +19,10 @@ public class MainSection extends ConfigSection {
 
   public int saveIntervalSeconds;
 
+  public int topListUpdateIntervalSeconds;
+
+  public int maxTopListSize;
+
   public int incrementIntervalTicks;
 
   public int calendarBucketKeyUpdateIntervalSeconds;
@@ -40,6 +44,12 @@ public class MainSection extends ConfigSection {
 
     if (saveIntervalSeconds <= 0)
       throw new MappingError("Property \"saveIntervalSeconds\" cannot be less than or equal to zero");
+
+    if (topListUpdateIntervalSeconds <= 0)
+      throw new MappingError("Property \"topListUpdateIntervalSeconds\" cannot be less than or equal to zero");
+
+    if (maxTopListSize <= 0)
+      throw new MappingError("Property \"maxTopListSize\" cannot be less than or equal to zero");
 
     if (incrementIntervalTicks <= 0)
       throw new MappingError("Property \"incrementIntervalTicks\" cannot be less than or equal to zero");
