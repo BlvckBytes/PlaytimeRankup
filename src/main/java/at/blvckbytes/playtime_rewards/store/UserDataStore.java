@@ -20,7 +20,7 @@ public class UserDataStore {
   private final File userDataFolder;
 
   private final Map<UUID, UserData> userDataByPlayerId;
-  private final EnumMap<TopListType, EnumMap<TimeType, List<UserData>>> topListByTimeTypeByListType;
+  private final EnumMap<TopListType, EnumMap<TimeType, EnumMap<TopListDirection, List<UserData>>>> topListByDirectionByTimeTypeByListType;
 
   private long lastSaveStamp;
   private long lastTopListUpdateStamp;
@@ -45,7 +45,7 @@ public class UserDataStore {
       throw new IllegalStateException("Expected a directory at " + userDataFolder);
 
     this.userDataByPlayerId = new HashMap<>();
-    this.topListByTimeTypeByListType = new EnumMap<>(TopListType.class);
+    this.topListByDirectionByTimeTypeByListType = new EnumMap<>(TopListType.class);
 
     Bukkit.getScheduler().runTaskTimer(plugin, () -> {
       var now = System.currentTimeMillis();
@@ -75,27 +75,36 @@ public class UserDataStore {
   private void updateTopLists() {
     var userDataValues = new ArrayList<>(userDataByPlayerId.values());
 
-    for (TopListType topListType : TopListType.ALL_VALUES) {
-      for (TimeType timeType : TimeType.ALL_VALUES) {
-        userDataValues.sort((a, b) -> -Long.compare(topListType.accessStatistic(a, timeType), topListType.accessStatistic(b, timeType)));
+    for (var topListType : TopListType.ALL_VALUES) {
+      for (var timeType : TimeType.ALL_VALUES) {
+        for (var direction : TopListDirection.ALL_VALUES) {
 
-        for (var index = 0; index < userDataValues.size(); ++index)
-          userDataValues.get(index).setTopListNumber(topListType, timeType, index + 1);
+          direction.sort(userDataValues, topListType, timeType);
 
-        topListByTimeTypeByListType
-          .computeIfAbsent(topListType, _ -> new EnumMap<>(TimeType.class))
-          .put(timeType, firstNOfList(userDataValues, config.rootSection.maxTopListSize));
+          for (var index = 0; index < userDataValues.size(); ++index)
+            userDataValues.get(index).setTopListNumber(topListType, timeType, direction, index + 1);
+
+          topListByDirectionByTimeTypeByListType
+            .computeIfAbsent(topListType, _ -> new EnumMap<>(TimeType.class))
+            .computeIfAbsent(timeType, _ -> new EnumMap<>(TopListDirection.class))
+            .put(direction, firstNOfList(userDataValues, config.rootSection.maxTopListSize));
+        }
       }
     }
   }
 
-  public List<UserData> getTopList(TopListType type, TimeType timeType) {
-    var listTypeBucket = topListByTimeTypeByListType.get(type);
+  public List<UserData> getTopList(TopListType type, TimeType timeType, TopListDirection direction) {
+    var topListTypeBucket = topListByDirectionByTimeTypeByListType.get(type);
 
-    if (listTypeBucket == null)
+    if (topListTypeBucket == null)
       return Collections.emptyList();
 
-    var topList = listTypeBucket.get(timeType);
+    var timeTypeBucket = topListTypeBucket.get(timeType);
+
+    if (timeTypeBucket == null)
+      return Collections.emptyList();
+
+    var topList = timeTypeBucket.get(direction);
 
     if (topList == null)
       return Collections.emptyList();

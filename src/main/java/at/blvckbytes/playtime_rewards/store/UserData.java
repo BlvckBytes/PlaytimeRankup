@@ -22,7 +22,7 @@ public class UserData {
 
   private final boolean[] subtractedFromByTimeTypeOrdinal;
 
-  private final EnumMap<TopListType, EnumMap<TimeType, Integer>> topListIndexByTimeTypeByListType;
+  private final EnumMap<TopListType, EnumMap<TimeType, EnumMap<TopListDirection, Integer>>> topListIndexByDirectionByTimeTypeByListType;
 
   private UserData(
     UUID playerId,
@@ -46,22 +46,28 @@ public class UserData {
 
     this.subtractedFromByTimeTypeOrdinal = new boolean[TimeType.ALL_VALUES.size()];
 
-    this.topListIndexByTimeTypeByListType = new EnumMap<>(TopListType.class);
+    this.topListIndexByDirectionByTimeTypeByListType = new EnumMap<>(TopListType.class);
   }
 
-  public void setTopListNumber(TopListType topListType, TimeType timeType, int index) {
-    topListIndexByTimeTypeByListType
+  public void setTopListNumber(TopListType topListType, TimeType timeType, TopListDirection direction, int index) {
+    topListIndexByDirectionByTimeTypeByListType
       .computeIfAbsent(topListType, _ -> new EnumMap<>(TimeType.class))
-      .put(timeType, index);
+      .computeIfAbsent(timeType, _ -> new EnumMap<>(TopListDirection.class))
+      .put(direction, index);
   }
 
-  public int getTopListNumber(TopListType topListType, TimeType timeType) {
-    var typeBucket = topListIndexByTimeTypeByListType.get(topListType);
+  public int getTopListNumber(TopListType topListType, TimeType timeType, TopListDirection direction) {
+    var topListTypeBucket = topListIndexByDirectionByTimeTypeByListType.get(topListType);
 
-    if (typeBucket == null)
+    if (topListTypeBucket == null)
       return -1;
 
-    return typeBucket.getOrDefault(timeType, -1);
+    var timeTypeBucket = topListTypeBucket.get(timeType);
+
+    if (timeTypeBucket == null)
+      return -1;
+
+    return timeTypeBucket.getOrDefault(direction, -1);
   }
 
   public long getGlobalTimeTicks(TimeType timeType) {
@@ -169,9 +175,10 @@ public class UserData {
         if (calendarBucket != null)
           environment.withVariable(timeIdentifier, getCalendarBucketTimeTicks(calendarBucket, timeType));
 
-        var topNumberIdentifier = timeIdentifier + "_top_place";
-
-        environment.withVariable(topNumberIdentifier, getTopListNumber(topListType, timeType));
+        for (var topListDirection : TopListDirection.ALL_VALUES) {
+          var topNumberIdentifier = timeIdentifier + "_" + topListDirection.name().toLowerCase() + "_top_place";
+          environment.withVariable(topNumberIdentifier, getTopListNumber(topListType, timeType, topListDirection));
+        }
       }
     }
 

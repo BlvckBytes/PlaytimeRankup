@@ -4,9 +4,9 @@ import at.blvckbytes.cm_mapper.ConfigKeeper;
 import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
 import at.blvckbytes.playtime_rewards.config.MainSection;
 import at.blvckbytes.playtime_rewards.store.TimeType;
+import at.blvckbytes.playtime_rewards.store.TopListDirection;
 import at.blvckbytes.playtime_rewards.store.TopListType;
 import at.blvckbytes.playtime_rewards.store.UserDataStore;
-import me.blvckbytes.syllables_matcher.NormalizedConstant;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -34,45 +34,22 @@ public abstract class TopCommand implements CommandExecutor, TabCompleter {
     this.timeType = timeType;
   }
 
-  protected abstract void handlePageEntries(
-    @NotNull CommandSender sender, @NotNull String label,
-    NormalizedConstant<TopListType> normalizedType, List<TopListPageEntry> entries,
-    int currentPage, int numberOfPages, int pageSize
-  );
-
   @Override
   public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-    if (args.length > 2) {
-      config.rootSection.commonMessages.topCommandUsage.sendMessage(
-        sender,
-        new InterpretationEnvironment()
-          .withVariable("label", label)
-          .withVariable("types", TopListType.matcher.createCompletions(null))
-      );
-
-      return true;
-    }
-
     var normalizedType = TopListType.matcher.getNormalizedConstant(TopListType.GLOBAL);
 
     if (args.length > 0) {
       normalizedType = TopListType.matcher.matchFirst(args[0]);
 
       if (normalizedType == null) {
-        config.rootSection.commonMessages.topCommandUsage.sendMessage(
-          sender,
-          new InterpretationEnvironment()
-            .withVariable("label", label)
-            .withVariable("types", TopListType.matcher.createCompletions(null))
-        );
-
+        printUsage(sender, label);
         return true;
       }
     }
 
     var page = 1;
 
-    if (args.length == 2) {
+    if (args.length > 1) {
       try {
         page = Integer.parseInt(args[1]);
 
@@ -89,7 +66,23 @@ public abstract class TopCommand implements CommandExecutor, TabCompleter {
       }
     }
 
-    var topList = userDataStore.getTopList(normalizedType.constant, timeType);
+    var normalizedDirection = TopListDirection.matcher.getNormalizedConstant(TopListDirection.DESCENDING);
+
+    if (args.length > 2) {
+      normalizedDirection = TopListDirection.matcher.matchFirst(args[2]);
+
+      if (normalizedDirection == null) {
+        printUsage(sender, label);
+        return true;
+      }
+    }
+
+    if (args.length > 3) {
+      printUsage(sender, label);
+      return true;
+    }
+
+    var topList = userDataStore.getTopList(normalizedType.constant, timeType, normalizedDirection.constant);
 
     if (topList.isEmpty()) {
       config.rootSection.commonMessages.topCommandEmptyTopList.sendMessage(sender);
@@ -126,7 +119,18 @@ public abstract class TopCommand implements CommandExecutor, TabCompleter {
       );
     }
 
-    handlePageEntries(sender, label, normalizedType, pageEntries, page, numberOfPages, pageSize);
+    config.rootSection.commonMessages.topScreen.sendMessage(
+      sender,
+      new InterpretationEnvironment()
+        .withVariable("time_type", TimeType.matcher.getNormalizedName(timeType))
+        .withVariable("top_type", normalizedType.getNormalizedName())
+        .withVariable("top_direction", normalizedDirection.getNormalizedName())
+        .withVariable("entries", pageEntries)
+        .withVariable("current_page", page)
+        .withVariable("number_of_pages", numberOfPages)
+        .withVariable("page_size", pageSize)
+    );
+
     return true;
   }
 
@@ -141,7 +145,7 @@ public abstract class TopCommand implements CommandExecutor, TabCompleter {
       if (normalizedType == null)
         return List.of();
 
-      var topList = userDataStore.getTopList(normalizedType.constant, timeType);
+      var topList = userDataStore.getTopList(normalizedType.constant, timeType, TopListDirection.DESCENDING);
       var pageSize = config.rootSection.topListCommandsPageSize;
       var numberOfPages = (topList.size() + pageSize - 1) / pageSize;
 
@@ -152,6 +156,19 @@ public abstract class TopCommand implements CommandExecutor, TabCompleter {
         .toList();
     }
 
+    if (args.length == 3)
+      return TopListDirection.matcher.createCompletions(args[2]);
+
     return List.of();
+  }
+
+  private void printUsage(CommandSender sender, String label) {
+    config.rootSection.commonMessages.topCommandUsage.sendMessage(
+      sender,
+      new InterpretationEnvironment()
+        .withVariable("label", label)
+        .withVariable("types", TopListType.matcher.createCompletions(null))
+        .withVariable("directions", TopListDirection.matcher.createCompletions(null))
+    );
   }
 }

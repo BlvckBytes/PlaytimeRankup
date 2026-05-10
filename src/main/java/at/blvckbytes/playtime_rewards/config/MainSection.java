@@ -8,6 +8,7 @@ import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvir
 import at.blvckbytes.component_markup.util.logging.InterpreterLogger;
 import at.blvckbytes.playtime_rewards.rewards_display.config.RewardsDisplaySection;
 import at.blvckbytes.playtime_rewards.store.TimeType;
+import at.blvckbytes.playtime_rewards.store.TopListDirection;
 import at.blvckbytes.playtime_rewards.store.TopListType;
 import me.blvckbytes.syllables_matcher.EnumMatcher;
 import me.blvckbytes.syllables_matcher.MatchableEnum;
@@ -44,6 +45,7 @@ public class MainSection extends ConfigSection {
 
   public Map<String, String> topListTypeDisplayNames = new HashMap<>();
   public Map<String, String> timeTypeDisplayNames = new HashMap<>();
+  public Map<String, String> topListDirectionDisplayNames = new HashMap<>();
 
   public RewardsDisplaySection rewardsDisplay;
 
@@ -84,6 +86,8 @@ public class MainSection extends ConfigSection {
     if (timeTypeDisplayNames != null)
       updateDisplayNames(timeTypeDisplayNames, TimeType.matcher, TimeType.ALL_VALUES);
 
+    if (topListDirectionDisplayNames != null)
+      updateDisplayNames(topListDirectionDisplayNames, TopListDirection.matcher, TopListDirection.ALL_VALUES);
   }
 
   private <T extends MatchableEnum> void updateDisplayNames(Map<String, String> displayNameByEnumName, EnumMatcher<T> matcher, List<T> constants) {

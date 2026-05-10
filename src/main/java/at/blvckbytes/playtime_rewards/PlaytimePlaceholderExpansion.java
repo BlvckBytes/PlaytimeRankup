@@ -1,9 +1,6 @@
 package at.blvckbytes.playtime_rewards;
 
-import at.blvckbytes.playtime_rewards.store.CalendarBucket;
-import at.blvckbytes.playtime_rewards.store.TimeType;
-import at.blvckbytes.playtime_rewards.store.TopListType;
-import at.blvckbytes.playtime_rewards.store.UserDataStore;
+import at.blvckbytes.playtime_rewards.store.*;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.Plugin;
@@ -81,13 +78,25 @@ public class PlaytimePlaceholderExpansion extends PlaceholderExpansion {
   }
 
   private @Nullable String tryAccessTopTime(String[] args, TopListType topListType, TimeType timeType) {
-    if (!(args.length == 4 || args.length == 5) || !args[2].equals("top"))
+    if (!(args.length == 5 || args.length == 6))
+      return null;
+
+    var direction = switch (args[2]) {
+      case "desc" -> TopListDirection.DESCENDING;
+      case "asc" -> TopListDirection.ASCENDING;
+      default -> null;
+    };
+
+    if (direction == null)
+      return null;
+
+    if (!args[3].equals("top"))
       return null;
 
     int topPlace;
 
     try {
-      topPlace = Integer.parseInt(args[3]);
+      topPlace = Integer.parseInt(args[4]);
     } catch (Throwable e) {
       return null;
     }
@@ -95,14 +104,14 @@ public class PlaytimePlaceholderExpansion extends PlaceholderExpansion {
     if (topPlace <= 0)
       return null;
 
-    var topList = userDataStore.getTopList(topListType, timeType);
+    var topList = userDataStore.getTopList(topListType, timeType, direction);
 
     if (topPlace > topList.size())
       return null;
 
     var targetUser = topList.get(topPlace - 1);
 
-    if (args.length == 4) {
+    if (args.length == 5) {
       var calendarBucket = topListType.getCalendarBucket();
 
       if (calendarBucket == null)
@@ -111,7 +120,7 @@ public class PlaytimePlaceholderExpansion extends PlaceholderExpansion {
       return String.valueOf(targetUser.getCalendarBucketTimeTicks(calendarBucket, timeType));
     }
 
-    if (!args[4].equals("name"))
+    if (!args[5].equals("name"))
       return null;
 
     return targetUser.getLastKnownName();

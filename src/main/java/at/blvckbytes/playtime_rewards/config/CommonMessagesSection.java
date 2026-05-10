@@ -13,6 +13,7 @@ public class CommonMessagesSection extends ConfigSection {
   public ComponentMarkup topCommandInvalidPage;
   public ComponentMarkup topCommandEmptyTopList;
   public ComponentMarkup topCommandExceededPages;
+  public ComponentMarkup topScreen;
 
   public CommonMessagesSection(InterpretationEnvironment baseEnvironment, InterpreterLogger interpreterLogger) {
     super(baseEnvironment, interpreterLogger);
