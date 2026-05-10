@@ -211,6 +211,8 @@ public class UserDataStore {
         if (userData != null)
           userDataByPlayerId.put(userData.playerId, userData);
       }
+
+      logger.info("Loaded " + userDataByPlayerId.size() + " userdata-files");
     }
   }
 

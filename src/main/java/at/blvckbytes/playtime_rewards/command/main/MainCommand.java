@@ -8,18 +8,24 @@ import at.blvckbytes.playtime_rewards.duration_syntax.DurationException;
 import at.blvckbytes.playtime_rewards.duration_syntax.DurationSyntax;
 import at.blvckbytes.playtime_rewards.store.CalendarInfoProvider;
 import at.blvckbytes.playtime_rewards.store.TimeType;
+import at.blvckbytes.playtime_rewards.store.UserData;
 import at.blvckbytes.playtime_rewards.store.UserDataStore;
 import me.blvckbytes.syllables_matcher.NormalizedConstant;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class MainCommand implements CommandExecutor, TabCompleter {
@@ -162,6 +168,92 @@ public class MainCommand implements CommandExecutor, TabCompleter {
             .withVariable("did_add", didAdd)
         );
 
+        return true;
+      }
+
+      // For now, this will remain a hackish one-off utility, seeing how specific it is.
+      case MIGRATE_REWARDS_LITE -> {
+        var userdataFolder = Paths.get(
+          plugin.getDataFolder().getParentFile().getAbsolutePath(),
+          "RewardsLite", "userdata"
+        ).toFile();
+
+        if (!userdataFolder.isDirectory()) {
+          sender.sendMessage("§cThere's no userdata-folder at " + userdataFolder);
+          return true;
+        }
+
+        var outputFolder = new File(plugin.getDataFolder(), "RewardsLiteMigration");
+
+        if (!outputFolder.exists()) {
+          if (!outputFolder.mkdirs()) {
+            sender.sendMessage("§cCould not create output-folder at " + outputFolder);
+            return true;
+          }
+        }
+
+        else if (!outputFolder.isDirectory()) {
+          sender.sendMessage("§cEncountered unexpected file at " + outputFolder);
+          return true;
+        }
+
+        var userdataFiles = userdataFolder.listFiles();
+
+        if (userdataFiles == null || userdataFiles.length == 0) {
+          sender.sendMessage("§cThe userdata-folder at " + userdataFolder + " is empty");
+          return true;
+        }
+
+        var migratedFileCount = 0;
+
+        for (var userdataFile : userdataFiles) {
+          if (!userdataFile.isFile())
+            continue;
+
+          UUID playerId;
+
+          try {
+            var fileName = userdataFile.getName();
+            playerId = UUID.fromString(fileName.substring(0, fileName.indexOf('.')));
+          } catch (Throwable e) {
+            sender.sendMessage("§cEncountered malformed UUID at file-name of " + userdataFile + "; skipping");
+            continue;
+          }
+
+          var userdataConfig = YamlConfiguration.loadConfiguration(userdataFile);
+
+          var afkTime = userdataConfig.getInt("afkTime", -1);
+          var playTime = userdataConfig.getInt("playtime", -1);
+          var lastKnownName = userdataConfig.getString("lastKnownName");
+
+          if (afkTime < 0 || playTime < 0 || lastKnownName == null) {
+            sender.sendMessage("§cEncountered malformed data-file at " + userdataFile + "; skipping");
+            continue;
+          }
+
+          var internalUserData = UserData.makeInitial(playerId, lastKnownName, calendarInfoProvider);
+
+          if (playTime > 0)
+            internalUserData.incrementTime(TimeType.PLAY_TIME, playTime, calendarInfoProvider);
+
+          if (afkTime > 0)
+            internalUserData.incrementTime(TimeType.AFK_TIME, afkTime, calendarInfoProvider);
+
+          internalUserData.resetAllCalendarBuckets();
+
+          var outputFile = new File(outputFolder, playerId + ".yml");
+
+          try (var writer = new FileWriter(outputFile)) {
+            writer.write(internalUserData.serialize());
+          } catch (Throwable e) {
+            sender.sendMessage("§cCould not write output to " + outputFile + ": " + e.getMessage());
+            continue;
+          }
+
+          ++migratedFileCount;
+        }
+
+        sender.sendMessage("§aMigrated " + migratedFileCount + " userdata-files");
         return true;
       }
     }

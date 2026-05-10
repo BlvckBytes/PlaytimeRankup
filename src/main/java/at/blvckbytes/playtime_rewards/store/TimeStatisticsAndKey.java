@@ -10,14 +10,22 @@ public class TimeStatisticsAndKey extends TimeStatistics {
     this.key = key;
   }
 
-  public boolean updateKeyAndResetIfApplicable(int newKey) {
-    if (this.key == newKey)
+  public boolean resetIfApplicable() {
+    if (playTimeTicks == 0 && afkTimeTicks == 0)
       return false;
 
-    this.playTimeTicks = 0;
-    this.afkTimeTicks = 0;
-    this.key = newKey;
+    playTimeTicks = 0;
+    afkTimeTicks = 0;
 
     return true;
+  }
+
+  public boolean updateKeyAndResetIfApplicable(int newKey) {
+    if (key == newKey)
+      return false;
+
+    key = newKey;
+
+    return resetIfApplicable();
   }
 }

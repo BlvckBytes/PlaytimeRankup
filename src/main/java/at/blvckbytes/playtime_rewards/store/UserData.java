@@ -90,6 +90,13 @@ public class UserData {
     this.dirty = true;
   }
 
+  public void resetAllCalendarBuckets() {
+    for (var calendarBucket : CalendarBucket.ALL_VALUES) {
+      var bucketStatistics = statisticsByCalendarBucketOrdinal[calendarBucket.ordinal()];
+      dirty |= bucketStatistics.resetIfApplicable();
+    }
+  }
+
   public void updateCalendarBucketKeys(CalendarInfoProvider calendarInfoProvider) {
     for (var calendarBucket : CalendarBucket.ALL_VALUES) {
       var bucketStatistics = statisticsByCalendarBucketOrdinal[calendarBucket.ordinal()];
