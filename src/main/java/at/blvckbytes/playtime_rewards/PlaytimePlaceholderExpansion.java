@@ -101,17 +101,13 @@ public class PlaytimePlaceholderExpansion extends PlaceholderExpansion {
       return null;
     }
 
-    if (topPlace <= 0)
-      return null;
-
     var topList = userDataStore.getTopList(topListType, timeType, direction);
-
-    if (topPlace > topList.size())
-      return null;
-
-    var targetUser = topList.get(topPlace - 1);
+    var targetUser = topPlace <= 0 || topPlace > topList.size() ? null : topList.get(topPlace - 1);
 
     if (args.length == 5) {
+      if (targetUser == null)
+        return "0";
+
       var calendarBucket = topListType.getCalendarBucket();
 
       if (calendarBucket == null)
@@ -122,6 +118,9 @@ public class PlaytimePlaceholderExpansion extends PlaceholderExpansion {
 
     if (!args[5].equals("name"))
       return null;
+
+    if (targetUser == null)
+      return "undefined";
 
     return targetUser.getLastKnownName();
   }
