@@ -7,28 +7,28 @@ import java.util.List;
 
 public enum CalendarBucket {
 
-  DAY(TopListType.DAY) {
+  DAY {
     @Override
     public int makeKey(LocalDate currentDate) {
       return currentDate.getYear() * 1000 + currentDate.getDayOfYear();
     }
   },
 
-  WEEK(TopListType.WEEK) {
+  WEEK {
     @Override
     public int makeKey(LocalDate currentDate) {
       return currentDate.get(WeekFields.ISO.weekBasedYear()) * 100 + currentDate.get(WeekFields.ISO.weekOfWeekBasedYear());
     }
   },
 
-  MONTH(TopListType.MONTH) {
+  MONTH {
     @Override
     public int makeKey(LocalDate currentDate) {
       return currentDate.getYear() * 100 + currentDate.getMonthValue();
     }
   },
 
-  YEAR(TopListType.YEAR) {
+  YEAR {
     @Override
     public int makeKey(LocalDate currentDate) {
       return currentDate.getYear();
@@ -38,11 +38,14 @@ public enum CalendarBucket {
 
   public static final List<CalendarBucket> ALL_VALUES = Arrays.asList(values());
 
-  public final TopListType topListType;
-
-  CalendarBucket(TopListType topListType) {
-    this.topListType = topListType;
-  }
-
   public abstract int makeKey(LocalDate currentDate);
+
+  public TopListType getTopListType() {
+    return switch (this) {
+      case DAY -> TopListType.DAY;
+      case WEEK -> TopListType.WEEK;
+      case MONTH -> TopListType.MONTH;
+      case YEAR -> TopListType.YEAR;
+    };
+  }
 }

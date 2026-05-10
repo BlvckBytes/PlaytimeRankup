@@ -77,7 +77,7 @@ public class PlaytimePlaceholderExpansion extends PlaceholderExpansion {
     if (args.length == 2)
       return String.valueOf(userData.getCalendarBucketTimeTicks(bucketType, timeType));
 
-    return tryAccessTopTime(args, bucketType.topListType, timeType);
+    return tryAccessTopTime(args, bucketType.getTopListType(), timeType);
   }
 
   private @Nullable String tryAccessTopTime(String[] args, TopListType topListType, TimeType timeType) {
@@ -103,10 +103,12 @@ public class PlaytimePlaceholderExpansion extends PlaceholderExpansion {
     var targetUser = topList.get(topPlace - 1);
 
     if (args.length == 4) {
-      if (topListType.calendarBucket == null)
+      var calendarBucket = topListType.getCalendarBucket();
+
+      if (calendarBucket == null)
         return String.valueOf(targetUser.getGlobalTimeTicks(timeType));
 
-      return String.valueOf(targetUser.getCalendarBucketTimeTicks(topListType.calendarBucket, timeType));
+      return String.valueOf(targetUser.getCalendarBucketTimeTicks(calendarBucket, timeType));
     }
 
     if (!args[4].equals("name"))

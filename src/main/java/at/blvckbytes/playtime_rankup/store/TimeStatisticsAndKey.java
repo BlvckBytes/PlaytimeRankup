@@ -16,6 +16,7 @@ public class TimeStatisticsAndKey extends TimeStatistics {
 
     this.playTimeTicks = 0;
     this.afkTimeTicks = 0;
+    this.key = newKey;
 
     return true;
   }
