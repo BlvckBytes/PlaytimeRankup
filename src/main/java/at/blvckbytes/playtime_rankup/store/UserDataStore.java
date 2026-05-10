@@ -75,12 +75,15 @@ public class UserDataStore {
   private void updateTopLists() {
     var userDataValues = new ArrayList<>(userDataByPlayerId.values());
 
-    for (TopListType topType : TopListType.ALL_VALUES) {
+    for (TopListType topListType : TopListType.ALL_VALUES) {
       for (TimeType timeType : TimeType.ALL_VALUES) {
-        userDataValues.sort((a, b) -> -Long.compare(topType.accessStatistic(a, timeType), topType.accessStatistic(b, timeType)));
+        userDataValues.sort((a, b) -> -Long.compare(topListType.accessStatistic(a, timeType), topListType.accessStatistic(b, timeType)));
+
+        for (var index = 0; index < userDataValues.size(); ++index)
+          userDataValues.get(index).setTopListNumber(topListType, timeType, index + 1);
 
         topListByTimeTypeByListType
-          .computeIfAbsent(topType, _ -> new EnumMap<>(TimeType.class))
+          .computeIfAbsent(topListType, _ -> new EnumMap<>(TimeType.class))
           .put(timeType, firstNOfList(userDataValues, config.rootSection.maxTopListSize));
       }
     }

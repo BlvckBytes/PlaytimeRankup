@@ -3,6 +3,7 @@ package at.blvckbytes.playtime_rankup.store;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.StringReader;
+import java.util.EnumMap;
 import java.util.UUID;
 
 public class UserData {
@@ -16,6 +17,8 @@ public class UserData {
   private final TimeStatisticsAndKey[] statisticsByCalendarBucketOrdinal;
 
   private boolean dirty;
+
+  private final EnumMap<TopListType, EnumMap<TimeType, Integer>> topListIndexByTimeTypeByListType;
 
   private UserData(
     UUID playerId,
@@ -36,6 +39,23 @@ public class UserData {
 
     if (statisticsByCalendarBucketOrdinal.length != CalendarBucket.ALL_VALUES.size())
       throw new IllegalStateException("Array \"statisticsByCalendarBucketOrdinal\" does not hold as many values as there are bucket-types");
+
+    this.topListIndexByTimeTypeByListType = new EnumMap<>(TopListType.class);
+  }
+
+  public void setTopListNumber(TopListType topListType, TimeType timeType, int index) {
+    topListIndexByTimeTypeByListType
+      .computeIfAbsent(topListType, _ -> new EnumMap<>(TimeType.class))
+      .put(timeType, index);
+  }
+
+  public int getTopListNumber(TopListType topListType, TimeType timeType) {
+    var typeBucket = topListIndexByTimeTypeByListType.get(topListType);
+
+    if (typeBucket == null)
+      return -1;
+
+    return typeBucket.getOrDefault(timeType, -1);
   }
 
   public long getGlobalTimeTicks(TimeType timeType) {
