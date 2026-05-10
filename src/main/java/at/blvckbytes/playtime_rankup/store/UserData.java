@@ -4,6 +4,7 @@ import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvir
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.StringReader;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.UUID;
 
@@ -18,6 +19,8 @@ public class UserData {
   private final TimeStatisticsAndKey[] statisticsByCalendarBucketOrdinal;
 
   private boolean dirty;
+
+  private final boolean[] subtractedFromByTimeTypeOrdinal;
 
   private final EnumMap<TopListType, EnumMap<TimeType, Integer>> topListIndexByTimeTypeByListType;
 
@@ -40,6 +43,8 @@ public class UserData {
 
     if (statisticsByCalendarBucketOrdinal.length != CalendarBucket.ALL_VALUES.size())
       throw new IllegalStateException("Array \"statisticsByCalendarBucketOrdinal\" does not hold as many values as there are bucket-types");
+
+    this.subtractedFromByTimeTypeOrdinal = new boolean[TimeType.ALL_VALUES.size()];
 
     this.topListIndexByTimeTypeByListType = new EnumMap<>(TopListType.class);
   }
@@ -86,7 +91,7 @@ public class UserData {
     }
   }
 
-  public void incrementTime(TimeType timeType, int value, CalendarInfoProvider calendarInfoProvider) {
+  public void incrementTime(TimeType timeType, long value, CalendarInfoProvider calendarInfoProvider) {
     globalStatistics.incrementTime(timeType, value);
 
     for (var calendarBucket : CalendarBucket.ALL_VALUES) {
@@ -99,7 +104,7 @@ public class UserData {
     dirty = true;
   }
 
-  public void decrementTime(TimeType timeType, int value, CalendarInfoProvider calendarInfoProvider) {
+  public void decrementTime(TimeType timeType, long value, CalendarInfoProvider calendarInfoProvider) {
     globalStatistics.decrementTime(timeType, value);
 
     for (var calendarBucket : CalendarBucket.ALL_VALUES) {
@@ -110,14 +115,22 @@ public class UserData {
     }
 
     dirty = true;
+
+    subtractedFromByTimeTypeOrdinal[timeType.ordinal()] = true;
   }
 
   public boolean isDirty() {
     return dirty;
   }
 
-  public void clearDirty() {
+  @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+  public boolean hasBeenSubtractedFrom(TimeType timeType) {
+    return subtractedFromByTimeTypeOrdinal[timeType.ordinal()];
+  }
+
+  public void clearFlags() {
     this.dirty = false;
+    Arrays.fill(subtractedFromByTimeTypeOrdinal, false);
   }
 
   public String serialize() {

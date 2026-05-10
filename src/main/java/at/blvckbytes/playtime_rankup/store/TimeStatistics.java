@@ -23,7 +23,7 @@ public class TimeStatistics {
     };
   }
 
-  public void incrementTime(TimeType timeType, int value) {
+  public void incrementTime(TimeType timeType, long value) {
     if (value <= 0)
       throw new IllegalArgumentException("Value cannot be less than or equal to zero");
 
@@ -33,13 +33,13 @@ public class TimeStatistics {
     }
   }
 
-  public void decrementTime(TimeType timeType, int value) {
-    if (value > 0)
-      throw new IllegalArgumentException("Value cannot be non-negative");
+  public void decrementTime(TimeType timeType, long value) {
+    if (value <= 0)
+      throw new IllegalArgumentException("Value cannot be less than or equal to zero");
 
     switch (timeType) {
-      case PLAY_TIME -> playTimeTicks -= Math.max(playTimeTicks, value);
-      case AFK_TIME -> afkTimeTicks -= Math.max(afkTimeTicks, value);
+      case PLAY_TIME -> playTimeTicks -= Math.min(playTimeTicks, value);
+      case AFK_TIME -> afkTimeTicks -= Math.min(afkTimeTicks, value);
     }
   }
 }
