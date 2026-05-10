@@ -1,12 +1,17 @@
 package at.blvckbytes.playtime_rankup.duration_syntax;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class DurationSyntax {
 
-   private static final long TICKS_IN_SECOND = 20;
-   private static final long TICKS_IN_MINUTE = TICKS_IN_SECOND * 60;
-   private static final long TICKS_IN_HOUR   = TICKS_IN_MINUTE * 60;
-   private static final long TICKS_IN_DAY    = TICKS_IN_HOUR * 24;
-   private static final long TICKS_IN_WEEK   = TICKS_IN_DAY * 7;
+  private static final long TICKS_IN_SECOND = 20;
+  private static final long TICKS_IN_MINUTE = TICKS_IN_SECOND * 60;
+  private static final long TICKS_IN_HOUR   = TICKS_IN_MINUTE * 60;
+  private static final long TICKS_IN_DAY    = TICKS_IN_HOUR * 24;
+  private static final long TICKS_IN_WEEK   = TICKS_IN_DAY * 7;
+
+  public static final List<Character> SUPPORTED_UNIT_CHARS = Arrays.asList('s', 'm', 'h', 'd', 'w');
 
   public static long parseSyntaxIntoTicks(String input) throws DurationException {
     var totalValue = 0L;

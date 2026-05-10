@@ -12,6 +12,12 @@ public class MainCommandSection extends CommandSection {
   public ComponentMarkup commandUsage;
   public ComponentMarkup reloadedSuccessfully;
   public ComponentMarkup errorWhileReloading;
+  public ComponentMarkup timeModificationUsage;
+  public ComponentMarkup unsupportedDurationUnit;
+  public ComponentMarkup malformedDurationNumber;
+  public ComponentMarkup negativeDurationNumber;
+  public ComponentMarkup zeroDuration;
+  public ComponentMarkup timeModifiedSuccessfully;
 
   public MainCommandSection(InterpretationEnvironment baseEnvironment, InterpreterLogger interpreterLogger) {
     super(INITIAL_NAME, baseEnvironment, interpreterLogger);

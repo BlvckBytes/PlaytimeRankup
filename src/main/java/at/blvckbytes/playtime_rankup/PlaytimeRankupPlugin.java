@@ -48,7 +48,9 @@ public class PlaytimeRankupPlugin extends JavaPlugin {
       if (essentials == null)
         throw new IllegalStateException("Expected Essentials to be loaded");
 
-      userDataStore = new UserDataStore(new CalendarInfoProvider(config, this), config, this);
+      var calendarInfoProvider = new CalendarInfoProvider(config, this);
+
+      userDataStore = new UserDataStore(calendarInfoProvider, config, this);
 
       if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI"))
         new PlaytimePlaceholderExpansion(this, userDataStore).register();
@@ -75,7 +77,7 @@ public class PlaytimeRankupPlugin extends JavaPlugin {
       rewardsCommand.setExecutor(new RewardsCommand(userDataStore, rewardsDisplayHandler, offlinePlayerRegistry, config));
 
       var playtimeRankupCommand = Objects.requireNonNull(getCommand("playtimerankup"));
-      playtimeRankupCommand.setExecutor(new MainCommand(config, this));
+      playtimeRankupCommand.setExecutor(new MainCommand(offlinePlayerRegistry, userDataStore, calendarInfoProvider, config, this));
 
       var commandUpdater = new CommandUpdater(this);
 

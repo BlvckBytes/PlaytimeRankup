@@ -42,6 +42,18 @@ commands:
     commandUsage: '{lut.prefix} <&c>Benutzung: /{label} \<<&4 *for-action="actions" *for-separator={,<space/>}>{action}</>>'
     reloadedSuccessfully: '{lut.prefix} <&7>Die Konfiguration wurde erfolgreich <&a>neu geladen<&7>.'
     errorWhileReloading: '{lut.prefix} <&c>Es trat ein Fehler auf, während die Konfiguration neu geladen wurde; siehe Konsole!'
+    timeModificationUsage: '{lut.prefix} <&c>Benutzung: /{label} {action} \<Name> \<Dauer>'
+    unsupportedDurationUnit: '{lut.prefix} <&c>Unbekannte Einheit <&4>{error_token}</>; wähle aus: <&4 *for-unit="supported_units" *for-separator={,<space/>}>{unit}</>!'
+    malformedDurationNumber: '{lut.prefix} <&c>Ungültige Zahl: <&4>{error_token}</>!'
+    negativeDurationNumber: '{lut.prefix} <&c>Negative Zahl: <&4>{error_token}</>!'
+    zeroDuration: '{lut.prefix} <&c>Die Gesamtdauer muss größer als Null sein!'
+    timeModifiedSuccessfully: |
+      {lut.prefix} <&7>Die <&6>{time_type} <&7>von <&6><$lut.time_format [time]="delta_time" />
+      <&7> wurde dem Spieler <&6>{player_name} <&7>erfolgreich<space/>
+      <&a *if="did_add">hinzugefügt</>
+      <&c *else>abgezogen</>
+      ; alter Stand: <&6><$lut.time_format [time]="prior_value" /></>
+      ; neuer Stand: <&6><$lut.time_format [time]="new_value" />.
 commonMessages:
   onlyAvailableToPlayers: '{lut.prefix} <&c>Dieser Befehl ist nur für Spieler verfügbar!'
   hasNotPlayedBefore: '{lut.prefix} <&c>Der Spieler <&4>{name} <&c>hat noch nicht zuvor gespielt!'
@@ -56,6 +68,9 @@ topListType:
     WEEK: 'Woche'
     MONTH: 'Monat'
     YEAR: 'Jahr'
+timeType:
+  AFK_TIME: 'AFK-Zeit'
+  PLAY_TIME: 'Spielzeit'
 rewardsDisplay:
   title: '<&8>{player_name}''s Belohnungen'
   rows: 5

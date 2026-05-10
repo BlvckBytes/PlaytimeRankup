@@ -7,6 +7,7 @@ import at.blvckbytes.cm_mapper.mapper.section.ConfigSection;
 import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
 import at.blvckbytes.component_markup.util.logging.InterpreterLogger;
 import at.blvckbytes.playtime_rankup.rewards_display.config.RewardsDisplaySection;
+import at.blvckbytes.playtime_rankup.store.TimeType;
 import at.blvckbytes.playtime_rankup.store.TopListType;
 
 import java.lang.reflect.Field;
@@ -40,6 +41,7 @@ public class MainSection extends ConfigSection {
   public CommonMessagesSection commonMessages;
 
   public TopListTypeSection topListType;
+  public TimeTypeSection timeType;
 
   public RewardsDisplaySection rewardsDisplay;
 
@@ -75,9 +77,21 @@ public class MainSection extends ConfigSection {
     }
 
     if (topListType.displayNames != null) {
-      for (var topType : TopListType.ALL_VALUES) {
-        var normalizedConstant = TopListType.matcher.getNormalizedConstant(topType);
-        var displayName = topListType.displayNames.get(topType.name());
+      for (var topTypeConstant : TopListType.ALL_VALUES) {
+        var normalizedConstant = TopListType.matcher.getNormalizedConstant(topTypeConstant);
+        var displayName = topListType.displayNames.get(topTypeConstant.name());
+
+        if (displayName == null)
+          displayName = normalizedConstant.initialNormalizedName;
+
+        normalizedConstant.setName(displayName);
+      }
+    }
+
+    if (timeType.displayNames != null) {
+      for (var timeTypeConstant : TimeType.ALL_VALUES) {
+        var normalizedConstant = TimeType.matcher.getNormalizedConstant(timeTypeConstant);
+        var displayName = timeType.displayNames.get(timeTypeConstant.name());
 
         if (displayName == null)
           displayName = normalizedConstant.initialNormalizedName;
