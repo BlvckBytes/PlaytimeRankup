@@ -7,6 +7,7 @@ import at.blvckbytes.cm_mapper.mapper.section.ConfigSection;
 import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
 import at.blvckbytes.component_markup.util.logging.InterpreterLogger;
 import at.blvckbytes.playtime_rankup.rewards_display.config.RewardsDisplaySection;
+import at.blvckbytes.playtime_rankup.store.TopListType;
 
 import java.lang.reflect.Field;
 import java.time.ZoneId;
@@ -36,6 +37,12 @@ public class MainSection extends ConfigSection {
 
   public Map<String, RankSection> ranks = new HashMap<>();
   public @CSIgnore List<RankSection> rankList = new ArrayList<>();
+
+  public CommandsSection commands;
+
+  public CommonMessagesSection commonMessages;
+
+  public TopListTypeSection topListType;
 
   public RewardsDisplaySection rewardsDisplay;
 
@@ -68,6 +75,18 @@ public class MainSection extends ConfigSection {
       _timeZone = ZoneId.of(timeZoneId);
     } catch (Throwable e) {
       throw new MappingError("Property \"timeZoneId\" does not resemble a valid time-zone");
+    }
+
+    if (topListType.displayNames != null) {
+      for (var topType : TopListType.ALL_VALUES) {
+        var normalizedConstant = TopListType.matcher.getNormalizedConstant(topType);
+        var displayName = topListType.displayNames.get(topType.name());
+
+        if (displayName == null)
+          displayName = normalizedConstant.initialNormalizedName;
+
+        normalizedConstant.setName(displayName);
+      }
     }
   }
 }

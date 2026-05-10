@@ -17,7 +17,3 @@ commands:
   playtimerankup:
     description: The main command, to be used for administrative purposes
     permission: playtimerankup.admin-command
-
-permissions:
-  playtimerankup.rewards.other:
-    description: View the rewards of other players

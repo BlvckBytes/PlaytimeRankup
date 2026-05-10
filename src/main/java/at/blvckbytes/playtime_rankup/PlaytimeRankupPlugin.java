@@ -2,7 +2,12 @@ package at.blvckbytes.playtime_rankup;
 
 import at.blvckbytes.cm_mapper.ConfigHandler;
 import at.blvckbytes.cm_mapper.ConfigKeeper;
+import at.blvckbytes.cm_mapper.section.command.CommandUpdater;
 import at.blvckbytes.playtime_rankup.command.*;
+import at.blvckbytes.playtime_rankup.command.playtime.PlaytimeCommand;
+import at.blvckbytes.playtime_rankup.command.rewards.RewardsCommand;
+import at.blvckbytes.playtime_rankup.command.top_times.AfkTopCommand;
+import at.blvckbytes.playtime_rankup.command.top_times.PlayTopCommand;
 import at.blvckbytes.playtime_rankup.command.main.MainCommand;
 import at.blvckbytes.playtime_rankup.config.MainSection;
 import at.blvckbytes.playtime_rankup.rankup.RankupManager;
@@ -19,8 +24,6 @@ import java.util.Objects;
 import java.util.logging.Level;
 
 public class PlaytimeRankupPlugin extends JavaPlugin {
-
-  // TODO: Put all messages into the config
 
   private @Nullable UserDataStore userDataStore;
   private @Nullable RewardsDisplayHandler rewardsDisplayHandler;
@@ -59,11 +62,33 @@ public class PlaytimeRankupPlugin extends JavaPlugin {
       rewardsDisplayHandler = new RewardsDisplayHandler(config, this);
       getServer().getPluginManager().registerEvents(rewardsDisplayHandler, this);
 
-      Objects.requireNonNull(getCommand("playtime")).setExecutor(new PlaytimeCommand(userDataStore, offlinePlayerRegistry));
-      Objects.requireNonNull(getCommand("playtop")).setExecutor(new PlayTopCommand(userDataStore, config));
-      Objects.requireNonNull(getCommand("afktop")).setExecutor(new AfkTopCommand(userDataStore, config));
-      Objects.requireNonNull(getCommand("rewards")).setExecutor(new RewardsCommand(userDataStore, rewardsDisplayHandler, offlinePlayerRegistry));
-      Objects.requireNonNull(getCommand("playtimerankup")).setExecutor(new MainCommand(config, this));
+      var playtimeCommand = Objects.requireNonNull(getCommand("playtime"));
+      playtimeCommand.setExecutor(new PlaytimeCommand(userDataStore, offlinePlayerRegistry, config));
+
+      var playTopCommand = Objects.requireNonNull(getCommand("playtop"));
+      playTopCommand.setExecutor(new PlayTopCommand(userDataStore, config));
+
+      var afkTopCommand = Objects.requireNonNull(getCommand("afktop"));
+      afkTopCommand.setExecutor(new AfkTopCommand(userDataStore, config));
+
+      var rewardsCommand = Objects.requireNonNull(getCommand("rewards"));
+      rewardsCommand.setExecutor(new RewardsCommand(userDataStore, rewardsDisplayHandler, offlinePlayerRegistry, config));
+
+      var playtimeRankupCommand = Objects.requireNonNull(getCommand("playtimerankup"));
+      playtimeRankupCommand.setExecutor(new MainCommand(config, this));
+
+      var commandUpdater = new CommandUpdater(this);
+
+      Runnable updateCommands = () -> {
+        config.rootSection.commands.playtime.apply(playtimeCommand, commandUpdater);
+        config.rootSection.commands.playTop.apply(playTopCommand, commandUpdater);
+        config.rootSection.commands.afkTop.apply(afkTopCommand, commandUpdater);
+        config.rootSection.commands.rewards.apply(rewardsCommand, commandUpdater);
+        config.rootSection.commands.main.apply(playtimeRankupCommand, commandUpdater);
+      };
+
+      updateCommands.run();
+      commandUpdater.trySyncCommands();
     } catch (Throwable e) {
       logger.log(Level.SEVERE, "An error occurred while trying to enable the plugin; disabling!", e);
       Bukkit.getPluginManager().disablePlugin(this);

@@ -1,5 +1,9 @@
-package at.blvckbytes.playtime_rankup.command;
+package at.blvckbytes.playtime_rankup.command.rewards;
 
+import at.blvckbytes.cm_mapper.ConfigKeeper;
+import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
+import at.blvckbytes.playtime_rankup.command.OfflinePlayerRegistry;
+import at.blvckbytes.playtime_rankup.config.MainSection;
 import at.blvckbytes.playtime_rankup.rewards_display.RewardsDisplayHandler;
 import at.blvckbytes.playtime_rankup.store.UserDataStore;
 import org.bukkit.OfflinePlayer;
@@ -18,21 +22,24 @@ public class RewardsCommand implements CommandExecutor, TabCompleter {
   private final UserDataStore userDataStore;
   private final RewardsDisplayHandler displayHandler;
   private final OfflinePlayerRegistry offlinePlayerRegistry;
+  private final ConfigKeeper<MainSection> config;
 
   public RewardsCommand(
     UserDataStore userDataStore,
     RewardsDisplayHandler displayHandler,
-    OfflinePlayerRegistry offlinePlayerRegistry
+    OfflinePlayerRegistry offlinePlayerRegistry,
+    ConfigKeeper<MainSection> config
   ) {
     this.userDataStore = userDataStore;
     this.displayHandler = displayHandler;
     this.offlinePlayerRegistry = offlinePlayerRegistry;
+    this.config = config;
   }
 
   @Override
   public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
     if (!(sender instanceof Player player)) {
-      sender.sendMessage("§cThis command is only available to players");
+      config.rootSection.commonMessages.onlyAvailableToPlayers.sendMessage(sender);
       return true;
     }
 
@@ -45,14 +52,14 @@ public class RewardsCommand implements CommandExecutor, TabCompleter {
       target = offlinePlayerRegistry.getPlayerByName(args[1]);
 
       if (target == null) {
-        sender.sendMessage("§cThe player " + args[0] + " hasn't played on this server yet!");
+        config.rootSection.commonMessages.hasNotPlayedBefore.sendMessage(
+          sender,
+          new InterpretationEnvironment()
+            .withVariable("name", args[0])
+        );
+
         return true;
       }
-    }
-
-    if (target != player && !player.hasPermission("playtimerankup.rewards.other")) {
-      sender.sendMessage("§cYou cannot view the rewards of other players");
-      return true;
     }
 
     displayHandler.show(player, userDataStore.access(target));
@@ -61,7 +68,7 @@ public class RewardsCommand implements CommandExecutor, TabCompleter {
 
   @Override
   public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-    if (sender instanceof Player player && player.hasPermission("playtimerankup.rewards.other") && args.length == 1) {
+    if (sender instanceof Player && args.length == 1) {
       var typedNameLower = args[0].toLowerCase();
 
       return offlinePlayerRegistry.streamKnownNames()

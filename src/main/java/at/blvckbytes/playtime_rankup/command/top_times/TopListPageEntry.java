@@ -1,4 +1,4 @@
-package at.blvckbytes.playtime_rankup.command;
+package at.blvckbytes.playtime_rankup.command.top_times;
 
 import at.blvckbytes.component_markup.markup.interpreter.DirectFieldAccess;
 import org.jetbrains.annotations.Nullable;

@@ -1,7 +1,9 @@
-package at.blvckbytes.playtime_rankup.command;
+package at.blvckbytes.playtime_rankup.command.playtime;
 
-import at.blvckbytes.playtime_rankup.store.CalendarBucket;
-import at.blvckbytes.playtime_rankup.store.TimeType;
+import at.blvckbytes.cm_mapper.ConfigKeeper;
+import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
+import at.blvckbytes.playtime_rankup.command.OfflinePlayerRegistry;
+import at.blvckbytes.playtime_rankup.config.MainSection;
 import at.blvckbytes.playtime_rankup.store.UserDataStore;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -18,13 +20,16 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
 
   private final UserDataStore userDataStore;
   private final OfflinePlayerRegistry offlinePlayerRegistry;
+  private final ConfigKeeper<MainSection> config;
 
   public PlaytimeCommand(
     UserDataStore userDataStore,
-    OfflinePlayerRegistry offlinePlayerRegistry
+    OfflinePlayerRegistry offlinePlayerRegistry,
+    ConfigKeeper<MainSection> config
   ) {
     this.userDataStore = userDataStore;
     this.offlinePlayerRegistry = offlinePlayerRegistry;
+    this.config = config;
   }
 
   @Override
@@ -33,8 +38,7 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
 
     if (args.length == 0) {
       if (!(sender instanceof Player player)) {
-        // TODO: Config-message
-        sender.sendMessage("§cConsole-execution requires a name-argument");
+        config.rootSection.commands.playtime.consoleExecutionWithoutName.sendMessage(sender);
         return true;
       }
 
@@ -43,28 +47,35 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
 
     else {
       if (args.length != 1) {
-        // TODO: Config-message
-        sender.sendMessage("§cUsage: /" + label + " [Name]");
+        config.rootSection.commands.playtime.commandUsage.sendMessage(
+          sender,
+          new InterpretationEnvironment()
+            .withVariable("label", label)
+        );
         return true;
       }
 
       target = offlinePlayerRegistry.getPlayerByName(args[0]);
 
       if (target == null) {
-        sender.sendMessage("§cThe player " + args[0] + " hasn't played on this server yet!");
+        config.rootSection.commonMessages.hasNotPlayedBefore.sendMessage(
+          sender,
+          new InterpretationEnvironment()
+            .withVariable("name", args[0])
+        );
+
         return true;
       }
     }
 
     var data = userDataStore.access(target);
 
-    // TODO: Config-message (with isSelf)
+    if (target == sender) {
+      config.rootSection.commands.playtime.playtimeOfSelf.sendMessage(sender, data.makeEnvironment());
+      return true;
+    }
 
-    sender.sendMessage("§a" + target.getName() + "'s total playtime is " + data.getGlobalTimeTicks(TimeType.PLAY_TIME) + ", their total afk-time is " + data.getGlobalTimeTicks(TimeType.AFK_TIME));
-
-    for (CalendarBucket calendarBucket : CalendarBucket.ALL_VALUES)
-      sender.sendMessage("§a" + calendarBucket.name() + " playtime is " + data.getCalendarBucketTimeTicks(calendarBucket, TimeType.PLAY_TIME) + ", afk-time is " + data.getCalendarBucketTimeTicks(calendarBucket, TimeType.AFK_TIME));
-
+    config.rootSection.commands.playtime.playtimeOfOther.sendMessage(sender, data.makeEnvironment());
     return true;
   }
 

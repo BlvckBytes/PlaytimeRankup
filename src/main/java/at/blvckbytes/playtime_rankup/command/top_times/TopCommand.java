@@ -1,10 +1,12 @@
-package at.blvckbytes.playtime_rankup.command;
+package at.blvckbytes.playtime_rankup.command.top_times;
 
 import at.blvckbytes.cm_mapper.ConfigKeeper;
+import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
 import at.blvckbytes.playtime_rankup.config.MainSection;
 import at.blvckbytes.playtime_rankup.store.TimeType;
 import at.blvckbytes.playtime_rankup.store.TopListType;
 import at.blvckbytes.playtime_rankup.store.UserDataStore;
+import me.blvckbytes.syllables_matcher.NormalizedConstant;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -32,20 +34,40 @@ public abstract class TopCommand implements CommandExecutor, TabCompleter {
     this.timeType = timeType;
   }
 
-  protected abstract void handlePageEntries(@NotNull CommandSender sender, @NotNull String label, List<TopListPageEntry> entries);
+  protected abstract void handlePageEntries(
+    @NotNull CommandSender sender, @NotNull String label,
+    NormalizedConstant<TopListType> normalizedType, List<TopListPageEntry> entries,
+    int currentPage, int numberOfPages, int pageSize
+  );
 
   @Override
   public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-    if (args.length == 0 || args.length > 2) {
-      sender.sendMessage("§cUsage: /" + label + " <type> [page]");
+    if (args.length > 2) {
+      config.rootSection.commonMessages.topCommandUsage.sendMessage(
+        sender,
+        new InterpretationEnvironment()
+          .withVariable("label", label)
+          .withVariable("types", TopListType.matcher.createCompletions(null))
+      );
+
       return true;
     }
 
-    var normalizedType = TopListType.matcher.matchFirst(args[0]);
+    var normalizedType = TopListType.matcher.getNormalizedConstant(TopListType.GLOBAL);
 
-    if (normalizedType == null) {
-      sender.sendMessage("§cUnknown type!");
-      return true;
+    if (args.length > 0) {
+      normalizedType = TopListType.matcher.matchFirst(args[0]);
+
+      if (normalizedType == null) {
+        config.rootSection.commonMessages.topCommandUsage.sendMessage(
+          sender,
+          new InterpretationEnvironment()
+            .withVariable("label", label)
+            .withVariable("types", TopListType.matcher.createCompletions(null))
+        );
+
+        return true;
+      }
     }
 
     var page = 1;
@@ -57,7 +79,12 @@ public abstract class TopCommand implements CommandExecutor, TabCompleter {
         if (page < 0)
           throw new IllegalStateException();
       } catch (Throwable e) {
-        sender.sendMessage("§cInvalid page-value: " + args[1]);
+        config.rootSection.commonMessages.topCommandInvalidPage.sendMessage(
+          sender,
+          new InterpretationEnvironment()
+            .withVariable("input", args[1])
+        );
+
         return true;
       }
     }
@@ -65,7 +92,7 @@ public abstract class TopCommand implements CommandExecutor, TabCompleter {
     var topList = userDataStore.getTopList(normalizedType.constant, timeType);
 
     if (topList.isEmpty()) {
-      sender.sendMessage("§cThere are no entries in the top-list yet!");
+      config.rootSection.commonMessages.topCommandEmptyTopList.sendMessage(sender);
       return true;
     }
 
@@ -73,7 +100,13 @@ public abstract class TopCommand implements CommandExecutor, TabCompleter {
     var numberOfPages = (topList.size() + pageSize - 1) / pageSize;
 
     if (page > numberOfPages) {
-      sender.sendMessage("§cThere's no page " + page + ", seeing how there are only " + numberOfPages + " pages in total!");
+      config.rootSection.commonMessages.topCommandExceededPages.sendMessage(
+        sender,
+        new InterpretationEnvironment()
+          .withVariable("page", page)
+          .withVariable("number_of_pages", numberOfPages)
+      );
+
       return true;
     }
 
@@ -93,7 +126,7 @@ public abstract class TopCommand implements CommandExecutor, TabCompleter {
       );
     }
 
-    handlePageEntries(sender, label, pageEntries);
+    handlePageEntries(sender, label, normalizedType, pageEntries, page, numberOfPages, pageSize);
     return true;
   }
 

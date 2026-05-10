@@ -1,7 +1,9 @@
 package at.blvckbytes.playtime_rankup.command.main;
 
 import at.blvckbytes.cm_mapper.ConfigKeeper;
+import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
 import at.blvckbytes.playtime_rankup.config.MainSection;
+import me.blvckbytes.syllables_matcher.NormalizedConstant;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -28,24 +30,25 @@ public class MainCommand implements CommandExecutor, TabCompleter {
     if (!sender.hasPermission("playtimerankup.admin-command"))
       return true;
 
-    if (args.length == 0) {
-      sender.sendMessage("§cUsage: /" + label + " <Action>");
-      return true;
-    }
+    NormalizedConstant<CommandAction> normalizedAction;
 
-    var normalizedAction = CommandAction.matcher.matchFirst(args[0]);
+    if (args.length == 0 || (normalizedAction = CommandAction.matcher.matchFirst(args[0])) == null) {
+      config.rootSection.commands.main.commandUsage.sendMessage(
+        sender,
+        new InterpretationEnvironment()
+          .withVariable("label", label)
+          .withVariable("actions", CommandAction.matcher.createCompletions(null))
+      );
 
-    if (normalizedAction == null) {
-      sender.sendMessage("§cUsage: /" + label + " <Action>");
       return true;
     }
 
     if (normalizedAction.constant == CommandAction.RELOAD) {
       try {
         config.reload();
-        sender.sendMessage("§aReloaded successfully");
+        config.rootSection.commands.main.reloadedSuccessfully.sendMessage(sender);
       } catch (Exception e) {
-        sender.sendMessage("§cAn error occurred while trying to reload");
+        config.rootSection.commands.main.errorWhileReloading.sendMessage(sender);
         plugin.getLogger().log(Level.SEVERE, "An error occurred while trying to reload the config", e);
       }
       return true;
