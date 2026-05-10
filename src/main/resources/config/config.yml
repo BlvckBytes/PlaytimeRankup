@@ -62,12 +62,11 @@ commonMessages:
   topCommandEmptyTopList: '{lut.prefix} <&c>Die Topliste hat noch keine Einträge!'
   topCommandExceededPages: '{lut.prefix} <&c>Die Seitenzahl <&4>{page} <&c>überschreitet die Gesamtanzahl von <&4>{number_of_pages} Seiten<&c>!'
 topListType:
-  displayNames:
-    GLOBAL: 'Gesamt'
-    DAY: 'Tag'
-    WEEK: 'Woche'
-    MONTH: 'Monat'
-    YEAR: 'Jahr'
+  GLOBAL: 'Gesamt'
+  DAY: 'Tag'
+  WEEK: 'Woche'
+  MONTH: 'Monat'
+  YEAR: 'Jahr'
 timeType:
   AFK_TIME: 'AFK-Zeit'
   PLAY_TIME: 'Spielzeit'

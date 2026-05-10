@@ -9,6 +9,8 @@ import at.blvckbytes.component_markup.util.logging.InterpreterLogger;
 import at.blvckbytes.playtime_rewards.rewards_display.config.RewardsDisplaySection;
 import at.blvckbytes.playtime_rewards.store.TimeType;
 import at.blvckbytes.playtime_rewards.store.TopListType;
+import me.blvckbytes.syllables_matcher.EnumMatcher;
+import me.blvckbytes.syllables_matcher.MatchableEnum;
 
 import java.lang.reflect.Field;
 import java.time.ZoneId;
@@ -40,8 +42,8 @@ public class MainSection extends ConfigSection {
 
   public CommonMessagesSection commonMessages;
 
-  public TopListTypeSection topListType;
-  public TimeTypeSection timeType;
+  public Map<String, String> topListTypeDisplayNames = new HashMap<>();
+  public Map<String, String> timeTypeDisplayNames = new HashMap<>();
 
   public RewardsDisplaySection rewardsDisplay;
 
@@ -76,28 +78,24 @@ public class MainSection extends ConfigSection {
       throw new MappingError("Property \"timeZoneId\" does not resemble a valid time-zone");
     }
 
-    if (topListType.displayNames != null) {
-      for (var topTypeConstant : TopListType.ALL_VALUES) {
-        var normalizedConstant = TopListType.matcher.getNormalizedConstant(topTypeConstant);
-        var displayName = topListType.displayNames.get(topTypeConstant.name());
+    if (topListTypeDisplayNames != null)
+      updateDisplayNames(topListTypeDisplayNames, TopListType.matcher, TopListType.ALL_VALUES);
 
-        if (displayName == null)
-          displayName = normalizedConstant.initialNormalizedName;
+    if (timeTypeDisplayNames != null)
+      updateDisplayNames(timeTypeDisplayNames, TimeType.matcher, TimeType.ALL_VALUES);
 
-        normalizedConstant.setName(displayName);
-      }
-    }
+  }
 
-    if (timeType.displayNames != null) {
-      for (var timeTypeConstant : TimeType.ALL_VALUES) {
-        var normalizedConstant = TimeType.matcher.getNormalizedConstant(timeTypeConstant);
-        var displayName = timeType.displayNames.get(timeTypeConstant.name());
+  private <T extends MatchableEnum> void updateDisplayNames(Map<String, String> displayNameByEnumName, EnumMatcher<T> matcher, List<T> constants) {
+    for (var enumConstant : constants) {
+      var normalizedConstant = matcher.getNormalizedConstant(enumConstant);
 
-        if (displayName == null)
-          displayName = normalizedConstant.initialNormalizedName;
+      var displayName = displayNameByEnumName.get(enumConstant.name());
 
-        normalizedConstant.setName(displayName);
-      }
+      if (displayName == null)
+        displayName = normalizedConstant.initialNormalizedName;
+
+      normalizedConstant.setName(displayName);
     }
   }
 }
