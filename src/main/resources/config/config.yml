@@ -1,6 +1,7 @@
 saveIntervalSeconds: 60 * 15
 topListUpdateIntervalSeconds: 10
-maxTopListSize: 50
+maxTopListSize: 100
+topListCommandsPageSize: 10
 incrementIntervalTicks: 10
 calendarBucketKeyUpdateIntervalSeconds: 5
 timeZoneId: 'Europe/Berlin'

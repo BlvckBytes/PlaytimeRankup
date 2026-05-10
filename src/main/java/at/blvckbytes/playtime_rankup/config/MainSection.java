@@ -24,6 +24,8 @@ public class MainSection extends ConfigSection {
 
   public int maxTopListSize;
 
+  public int topListCommandsPageSize;
+
   public int incrementIntervalTicks;
 
   public int calendarBucketKeyUpdateIntervalSeconds;

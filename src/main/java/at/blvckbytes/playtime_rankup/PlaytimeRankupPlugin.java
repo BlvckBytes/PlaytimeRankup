@@ -60,8 +60,8 @@ public class PlaytimeRankupPlugin extends JavaPlugin {
       getServer().getPluginManager().registerEvents(rewardsDisplayHandler, this);
 
       Objects.requireNonNull(getCommand("playtime")).setExecutor(new PlaytimeCommand(userDataStore, offlinePlayerRegistry));
-      Objects.requireNonNull(getCommand("playtop")).setExecutor(new PlayTopCommand(userDataStore));
-      Objects.requireNonNull(getCommand("afktop")).setExecutor(new AfkTopCommand(userDataStore));
+      Objects.requireNonNull(getCommand("playtop")).setExecutor(new PlayTopCommand(userDataStore, config));
+      Objects.requireNonNull(getCommand("afktop")).setExecutor(new AfkTopCommand(userDataStore, config));
       Objects.requireNonNull(getCommand("rewards")).setExecutor(new RewardsCommand(userDataStore, rewardsDisplayHandler, offlinePlayerRegistry));
       Objects.requireNonNull(getCommand("playtimerankup")).setExecutor(new MainCommand(config, this));
     } catch (Throwable e) {

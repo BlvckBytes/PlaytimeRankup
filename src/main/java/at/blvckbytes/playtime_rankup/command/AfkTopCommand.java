@@ -1,5 +1,7 @@
 package at.blvckbytes.playtime_rankup.command;
 
+import at.blvckbytes.cm_mapper.ConfigKeeper;
+import at.blvckbytes.playtime_rankup.config.MainSection;
 import at.blvckbytes.playtime_rankup.store.TimeType;
 import at.blvckbytes.playtime_rankup.store.UserDataStore;
 import org.bukkit.command.CommandSender;
@@ -9,8 +11,11 @@ import java.util.List;
 
 public class AfkTopCommand extends TopCommand {
 
-  public AfkTopCommand(UserDataStore userDataStore) {
-    super(userDataStore, TimeType.AFK_TIME);
+  public AfkTopCommand(
+    UserDataStore userDataStore,
+    ConfigKeeper<MainSection> config
+  ) {
+    super(userDataStore, config, TimeType.AFK_TIME);
   }
 
   @Override

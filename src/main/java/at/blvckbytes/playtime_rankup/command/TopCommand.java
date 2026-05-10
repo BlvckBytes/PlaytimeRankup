@@ -1,5 +1,7 @@
 package at.blvckbytes.playtime_rankup.command;
 
+import at.blvckbytes.cm_mapper.ConfigKeeper;
+import at.blvckbytes.playtime_rankup.config.MainSection;
 import at.blvckbytes.playtime_rankup.store.TimeType;
 import at.blvckbytes.playtime_rankup.store.TopListType;
 import at.blvckbytes.playtime_rankup.store.UserDataStore;
@@ -16,14 +18,17 @@ import java.util.stream.IntStream;
 
 public abstract class TopCommand implements CommandExecutor, TabCompleter {
 
-  // TODO: Add to config
-  private static final int PAGE_SIZE = 10;
-
   private final UserDataStore userDataStore;
+  protected final ConfigKeeper<MainSection> config;
   private final TimeType timeType;
 
-  public TopCommand(UserDataStore userDataStore, TimeType timeType) {
+  public TopCommand(
+    UserDataStore userDataStore,
+    ConfigKeeper<MainSection> config,
+    TimeType timeType
+  ) {
     this.userDataStore = userDataStore;
+    this.config = config;
     this.timeType = timeType;
   }
 
@@ -64,7 +69,8 @@ public abstract class TopCommand implements CommandExecutor, TabCompleter {
       return true;
     }
 
-    var numberOfPages = (topList.size() + PAGE_SIZE - 1) / PAGE_SIZE;
+    var pageSize = config.rootSection.topListCommandsPageSize;
+    var numberOfPages = (topList.size() + pageSize - 1) / pageSize;
 
     if (page > numberOfPages) {
       sender.sendMessage("§cThere's no page " + page + ", seeing how there are only " + numberOfPages + " pages in total!");
@@ -72,9 +78,9 @@ public abstract class TopCommand implements CommandExecutor, TabCompleter {
     }
 
     var pageEntries = new ArrayList<TopListPageEntry>();
-    var firstIndex = (page - 1) * PAGE_SIZE;
+    var firstIndex = (page - 1) * pageSize;
 
-    for (var index = firstIndex; index < firstIndex + PAGE_SIZE; ++index) {
+    for (var index = firstIndex; index < firstIndex + pageSize; ++index) {
       if (index >= topList.size())
         break;
 
@@ -103,7 +109,8 @@ public abstract class TopCommand implements CommandExecutor, TabCompleter {
         return List.of();
 
       var topList = userDataStore.getTopList(normalizedType.constant, timeType);
-      var numberOfPages = (topList.size() + PAGE_SIZE - 1) / PAGE_SIZE;
+      var pageSize = config.rootSection.topListCommandsPageSize;
+      var numberOfPages = (topList.size() + pageSize - 1) / pageSize;
 
       return IntStream.range(1, numberOfPages + 1)
         .mapToObj(String::valueOf)
