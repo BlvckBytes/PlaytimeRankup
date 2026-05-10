@@ -4,7 +4,6 @@ import at.blvckbytes.cm_mapper.ConfigKeeper;
 import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
 import at.blvckbytes.playtime_rankup.config.MainSection;
 import at.blvckbytes.playtime_rankup.store.TimeType;
-import at.blvckbytes.playtime_rankup.store.TopListType;
 import at.blvckbytes.playtime_rankup.store.UserData;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -57,28 +56,6 @@ public class RewardsDisplay extends Display<UserData> {
   }
 
   private InterpretationEnvironment makeEnvironment() {
-    var environment = new InterpretationEnvironment();
-
-    environment
-      .withVariable("player_name", displayData.getLastKnownName())
-      .withVariable("play_time", displayData.getGlobalTimeTicks(TimeType.PLAY_TIME))
-      .withVariable("afk_time", displayData.getGlobalTimeTicks(TimeType.AFK_TIME));
-
-    for (var timeType : TimeType.ALL_VALUES) {
-      for (var topListType : TopListType.ALL_VALUES) {
-        var timeIdentifier = (timeType.name() + "_" + topListType.name()).toLowerCase();
-
-        var calendarBucket = topListType.getCalendarBucket();
-
-        if (calendarBucket != null)
-          environment.withVariable(timeIdentifier, displayData.getCalendarBucketTimeTicks(calendarBucket, timeType));
-
-        var topNumberIdentifier = timeIdentifier + "_top_place";
-
-        environment.withVariable(topNumberIdentifier, displayData.getTopListNumber(topListType, timeType));
-      }
-    }
-
-    return environment;
+    return displayData.makeEnvironment();
   }
 }

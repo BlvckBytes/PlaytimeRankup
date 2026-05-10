@@ -1,5 +1,6 @@
 package at.blvckbytes.playtime_rankup.store;
 
+import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.StringReader;
@@ -136,6 +137,32 @@ public class UserData {
     }
 
     return temporaryConfig.saveToString();
+  }
+
+  public InterpretationEnvironment makeEnvironment() {
+    var environment = new InterpretationEnvironment();
+
+    environment
+      .withVariable("player_name", lastKnownName)
+      .withVariable("play_time", getGlobalTimeTicks(TimeType.PLAY_TIME))
+      .withVariable("afk_time", getGlobalTimeTicks(TimeType.AFK_TIME));
+
+    for (var timeType : TimeType.ALL_VALUES) {
+      for (var topListType : TopListType.ALL_VALUES) {
+        var timeIdentifier = (timeType.name() + "_" + topListType.name()).toLowerCase();
+
+        var calendarBucket = topListType.getCalendarBucket();
+
+        if (calendarBucket != null)
+          environment.withVariable(timeIdentifier, getCalendarBucketTimeTicks(calendarBucket, timeType));
+
+        var topNumberIdentifier = timeIdentifier + "_top_place";
+
+        environment.withVariable(topNumberIdentifier, getTopListNumber(topListType, timeType));
+      }
+    }
+
+    return environment;
   }
 
   public static UserData makeInitial(UUID playerId, String lastKnownName, CalendarInfoProvider calendarInfoProvider) {
