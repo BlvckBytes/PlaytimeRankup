@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>at.blvckbytes</groupId>
-    <artifactId>PlaytimeRankup</artifactId>
+    <artifactId>PlaytimeRewards</artifactId>
     <version>0.1</version>
 
     <properties>
@@ -119,22 +119,22 @@
                     <relocations>
                         <relocation>
                             <pattern>me.blvckbytes.syllables_matcher</pattern>
-                            <shadedPattern>at.blvckbytes.playtime_rankup.syllables_matcher</shadedPattern>
+                            <shadedPattern>at.blvckbytes.playtime_rewards.syllables_matcher</shadedPattern>
                         </relocation>
 
                         <relocation>
                             <pattern>at.blvckbytes.component_markup</pattern>
-                            <shadedPattern>at.blvckbytes.playtime_rankup.component_markup</shadedPattern>
+                            <shadedPattern>at.blvckbytes.playtime_rewards.component_markup</shadedPattern>
                         </relocation>
 
                         <relocation>
                             <pattern>at.blvckbytes.cm_mapper</pattern>
-                            <shadedPattern>at.blvckbytes.playtime_rankup.cm_mapper</shadedPattern>
+                            <shadedPattern>at.blvckbytes.playtime_rewards.cm_mapper</shadedPattern>
                         </relocation>
 
                         <relocation>
                             <pattern>com.cryptomorin.xseries</pattern>
-                            <shadedPattern>at.blvckbytes.playtime_rankup.com.cryptomorin.xseries</shadedPattern>
+                            <shadedPattern>at.blvckbytes.playtime_rewards.com.cryptomorin.xseries</shadedPattern>
                         </relocation>
                     </relocations>
 

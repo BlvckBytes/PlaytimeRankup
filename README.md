@@ -1,4 +1,4 @@
-# PlaytimeRankup
+# PlaytimeRewards
 
 A simple yet effective play-time and afk-time tracker with global as well as calendar-bucketed
 statistics that directly integrates with LuckPerms as to append players with new parent-groups.

@@ -38,7 +38,7 @@ commands:
   rewards:
     name: rewards
   main:
-    name: playtimerankup
+    name: playtimerewards
     commandUsage: '{lut.prefix} <&c>Benutzung: /{label} \<<&4 *for-action="actions" *for-separator={,<space/>}>{action}</>>'
     reloadedSuccessfully: '{lut.prefix} <&7>Die Konfiguration wurde erfolgreich <&a>neu geladen<&7>.'
     errorWhileReloading: '{lut.prefix} <&c>Es trat ein Fehler auf, während die Konfiguration neu geladen wurde; siehe Konsole!'

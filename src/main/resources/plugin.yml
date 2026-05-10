@@ -1,6 +1,6 @@
-name: PlaytimeRankup
+name: PlaytimeRewards
 version: ${project.version}
-main: at.blvckbytes.playtime_rankup.PlaytimeRankupPlugin
+main: at.blvckbytes.playtime_rewards.PlaytimeRewardsPlugin
 author: BlvckBytes
 api-version: 26.1
 depend: [Essentials, LuckPerms]
@@ -14,6 +14,6 @@ commands:
     description: View the top leaderboards for playtime
   afktop:
     description: View the top leaderboards for AFK time
-  playtimerankup:
+  playtimerewards:
     description: The main command, to be used for administrative purposes
-    permission: playtimerankup.admin-command
+    permission: playtimerewards.admin-command
