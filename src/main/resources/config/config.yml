@@ -111,7 +111,7 @@ rewardsDisplay:
 sLut:
 cLut:
   prefix: '<&7>[<&6>Spielzeit<&7>]'
-  time_format: '<duration *else [value]="time / 20.0 * 1000.0" units="smhd" zeroes="s" />'
+  time_format: '<duration [value]="time / 20.0 * 1000.0" units="smhd" zeroes="s" />'
   date_now: '<date [format] locale="de" />'
   day_now: '<$lut.date_now format="EEE" />'
   week_now: '<$lut.date_now format="YYYY-''W''ww" />'
