@@ -79,18 +79,18 @@ cLut:
       <&a><&l>Vorteile:</><br/>
       <#9BCD9B><&o>Alles, was </>{lut.rank_prefix.entdecker} <&o>auch können, sowie:</><br/>
       <#C1FFC1>
-        20 Homepunkte<br/>
-        2 ImageFrames Bilder<br/>
-        Pipes + PipePredicates<br/>
-        Painting-Switcher<br/>
-        Hidden-Switch<br/>
-        Sign-Copier + SignEdit<br/>
-        Zugriff aufs Kopfplugin mit <#9370db>/hdb</><br/>
-        Lava-Schwämme (nasse Schwämme saugen Lava statt Wasser)<br/>
-        MultiBreak (Abbauradius max. 2x2x2)<br/>
-        Private virtuelle Truhe mit <#9370db>/pv</> (27 Slots)<br/>
-        Uncraft von Sachen mit <#9370db>/uc</><br/>
-        Inventarfilter beim Aufsammeln mit <#9370db>/invfilter \<item/variable></>
+        · 20 Homepunkte<br/>
+        · 2 ImageFrames Bilder<br/>
+        · Pipes + PipePredicates<br/>
+        · Painting-Switcher<br/>
+        · Hidden-Switch<br/>
+        · Sign-Copier + SignEdit<br/>
+        · Zugriff aufs Kopfplugin mit <#9370db>/hdb</><br/>
+        · Lava-Schwämme (nasse Schwämme saugen Lava statt Wasser)<br/>
+        · MultiBreak (Abbauradius max. 2x2x2)<br/>
+        · Private virtuelle Truhe mit <#9370db>/pv</> (27 Slots)<br/>
+        · Uncraft von Sachen mit <#9370db>/uc</><br/>
+        · Inventarfilter beim Aufsammeln mit <#9370db>/invfilter \<item/variable></>
       </#C1FFC1>
       {lut.remaining_time_section}
     buerger: |
@@ -98,18 +98,18 @@ cLut:
       <&a><&l>Vorteile:</><br/>
       <#9BCD9B><&o>Alles, was </>{lut.rank_prefix.siedler} <&o>auch können, sowie:</><br/>
       <#C1FFC1>
-        50 Homepunkte<br/>
-        5 ImageFrames Bilder<br/>
-        Teleporter<br/>
-        Lift-Schilder<br/>
-        Edit-Armorstands (EAS)<br/>
-        /nick (Nicknamen setzen)<br/>
-        /anvil (Mobiler Amboss)<br/>
-        Item-Name auf das in der Hand gehaltene mit <#9370db>/itemname \<name></><br/>
-        MultiBreak (Abbauradius max. 3x3x3)<br/>
-        Private virtuelle Truhe mit <#9370db>/pv</> (36 Slots)<br/>
-        Spielerzeit einstellbar mit <#9370db>/ptime \<Zeit></> in der Bauwelt<br/>
-        Uncraft von allem mit <#9370db>/uc -a</>
+        · 50 Homepunkte<br/>
+        · 5 ImageFrames Bilder<br/>
+        · Teleporter<br/>
+        · Lift-Schilder<br/>
+        · Edit-Armorstands (EAS)<br/>
+        · /nick (Nicknamen setzen)<br/>
+        · /anvil (Mobiler Amboss)<br/>
+        · Item-Name auf das in der Hand gehaltene mit <#9370db>/itemname \<name></><br/>
+        · MultiBreak (Abbauradius max. 3x3x3)<br/>
+        · Private virtuelle Truhe mit <#9370db>/pv</> (36 Slots)<br/>
+        · Spielerzeit einstellbar mit <#9370db>/ptime \<Zeit></> in der Bauwelt<br/>
+        · Uncraft von allem mit <#9370db>/uc -a</>
       </#C1FFC1>
       {lut.remaining_time_section}
     aristokrat: |
@@ -117,12 +117,12 @@ cLut:
       <&a><&l>Vorteile:</><br/>
       <#9BCD9B><&o>Alles, was </>{lut.rank_prefix.buerger} <&o>auch können, sowie:</><br/>
       <#C1FFC1>
-        100 Homepunkte<br/>
-        7 ImageFrames Bilder<br/>
-        Auto-Planter<br/>
-        Auto-Crafter<br/>
-        Transmitter/Receiver<br/>
-        MultiBreak (Abbauradius max. 4x4x4)<br/>
-        Private virtuelle Truhe mit <#9370db>/pv</> (45 Slots)
+        · 100 Homepunkte<br/>
+        · 7 ImageFrames Bilder<br/>
+        · Auto-Planter<br/>
+        · Auto-Crafter<br/>
+        · Transmitter/Receiver<br/>
+        · MultiBreak (Abbauradius max. 4x4x4)<br/>
+        · Private virtuelle Truhe mit <#9370db>/pv</> (45 Slots)
       </#C1FFC1>
       {lut.remaining_time_section}
