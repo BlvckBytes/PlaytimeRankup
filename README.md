@@ -28,6 +28,11 @@ while the suffix `_top_<N>` yields the top `N` place of all statistics within th
 it returns the time-value and with another suffix of `_name`, the last known name of that player is returned.
 
 ```
+%playtime_calendar_day%
+%playtime_calendar_week%
+%playtime_calendar_month%
+%playtime_calendar_year%
+
 %playtime_play_total%
 %playtime_play_total_desc_place%
 %playtime_play_total_desc_top_<N>%

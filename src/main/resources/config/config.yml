@@ -5,7 +5,12 @@ topListCommandsPageSize: 10
 incrementIntervalTicks: 10
 calendarBucketKeyUpdateIntervalSeconds: 5
 timeZoneId: 'Europe/Berlin'
-placeholderTime: '<$lut.time_format [time] />'
+placeholders:
+  timeFormat: '<duration [value]="time / 20.0 * 1000.0" units="hd" zeroes="h" />'
+  calendarDay: '{lut.day_now}'
+  calendarWeek: '{lut.week_now}'
+  calendarMonth: '{lut.month_now}'
+  calendarYear: '{lut.year_now}'
 ranks:
 commands:
   playTop:
@@ -83,19 +88,19 @@ rewardsDisplay:
           <&8>➥ <&e>Aktiv <&6><$lut.time_format [time]="play_time" /> <&7>(#{play_time_total_descending_top_place})<br/>
           <&8>➥ <&e>AFK <&6><$lut.time_format [time]="afk_time" /> <&7>(#{afk_time_total_descending_top_place})<br/>
           <br/>
-          <&9>Dieser Tag <&7>(<$lut.date_now format="EEE" />)<br/>
+          <&9>Dieser Tag <&7>({lut.day_now})<br/>
           <&8>➥ <&e>Aktiv <&6><$lut.time_format [time]="play_time_day" /> <&7>(#{play_time_day_descending_top_place})<br/>
           <&8>➥ <&e>AFK <&6><$lut.time_format [time]="afk_time_day" /> <&7>(#{afk_time_day_descending_top_place})<br/>
           <br/>
-          <&9>Diese Woche <&7>(<$lut.date_now format="YYYY-'W'ww" />)<br/>
+          <&9>Diese Woche <&7>({lut.week_now})<br/>
           <&8>➥ <&e>Aktiv <&6><$lut.time_format [time]="play_time_week" /> <&7>(#{play_time_week_descending_top_place})<br/>
           <&8>➥ <&e>AFK <&6><$lut.time_format [time]="afk_time_week" /> <&7>(#{afk_time_week_descending_top_place})<br/>
           <br/>
-          <&9>Diesen Monat <&7>(<$lut.date_now format="MMM" />)<br/>
+          <&9>Diesen Monat <&7>({lut.month_now})<br/>
           <&8>➥ <&e>Aktiv <&6><$lut.time_format [time]="play_time_month" /> <&7>(#{play_time_month_descending_top_place})<br/>
           <&8>➥ <&e>AFK <&6><$lut.time_format [time]="afk_time_month" /> <&7>(#{afk_time_month_descending_top_place})<br/>
           <br/>
-          <&9>Dieses Jahr <&7>(<$lut.date_now format="yyyy" />)<br/>
+          <&9>Dieses Jahr <&7>({lut.year_now})<br/>
           <&8>➥ <&e>Aktiv <&6><$lut.time_format [time]="play_time_year" /> <&7>(#{play_time_year_descending_top_place})<br/>
           <&8>➥ <&e>AFK <&6><$lut.time_format [time]="afk_time_year" /> <&7>(#{afk_time_year_descending_top_place})<br/>
     filler:
@@ -106,7 +111,9 @@ rewardsDisplay:
 sLut:
 cLut:
   prefix: '<&7>[<&6>Spielzeit<&7>]'
-  time_format: |
-    <container *if="time < 20">0s</>
-    <duration *else [value]="time / 20.0 * 1000.0" units="smhd" />
+  time_format: '<duration *else [value]="time / 20.0 * 1000.0" units="smhd" zeroes="s" />'
   date_now: '<date [format] locale="de" />'
+  day_now: '<$lut.date_now format="EEE" />'
+  week_now: '<$lut.date_now format="YYYY-''W''ww" />'
+  month_now: '<$lut.date_now format="MMM" />'
+  year_now: '<$lut.date_now format="yyyy" />'

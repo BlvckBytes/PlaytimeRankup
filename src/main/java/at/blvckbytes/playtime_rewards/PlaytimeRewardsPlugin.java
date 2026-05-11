@@ -16,6 +16,7 @@ import at.blvckbytes.playtime_rewards.command.top_times.PlayTopCommand;
 import at.blvckbytes.playtime_rewards.command.main.MainCommand;
 import at.blvckbytes.playtime_rewards.command.top_times.PlayTopCommandSection;
 import at.blvckbytes.playtime_rewards.config.MainSection;
+import at.blvckbytes.playtime_rewards.placeholder.PlaytimePlaceholderExpansion;
 import at.blvckbytes.playtime_rewards.rewards.RewardsManager;
 import at.blvckbytes.playtime_rewards.rewards_display.RewardsDisplayHandler;
 import at.blvckbytes.playtime_rewards.store.CalendarInfoProvider;

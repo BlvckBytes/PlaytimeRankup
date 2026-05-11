@@ -1,12 +1,12 @@
 package at.blvckbytes.playtime_rewards.config;
 
-import at.blvckbytes.cm_mapper.cm.ComponentMarkup;
 import at.blvckbytes.cm_mapper.mapper.MappingError;
 import at.blvckbytes.cm_mapper.mapper.section.CSAlways;
 import at.blvckbytes.cm_mapper.mapper.section.CSIgnore;
 import at.blvckbytes.cm_mapper.mapper.section.ConfigSection;
 import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
 import at.blvckbytes.component_markup.util.logging.InterpreterLogger;
+import at.blvckbytes.playtime_rewards.placeholder.PlaceholdersSection;
 import at.blvckbytes.playtime_rewards.rewards_display.config.RewardsDisplaySection;
 import at.blvckbytes.playtime_rewards.store.TimeType;
 import at.blvckbytes.playtime_rewards.store.TopListDirection;
@@ -37,7 +37,7 @@ public class MainSection extends ConfigSection {
 
   public @CSIgnore ZoneId _timeZone;
 
-  public ComponentMarkup placeholderTime;
+  public PlaceholdersSection placeholders;
 
   public Map<String, RankSection> ranks = new LinkedHashMap<>();
   public @CSIgnore List<RankSection> rankList = new ArrayList<>();

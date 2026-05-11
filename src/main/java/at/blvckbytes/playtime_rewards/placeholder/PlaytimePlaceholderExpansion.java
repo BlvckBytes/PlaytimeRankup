@@ -1,4 +1,4 @@
-package at.blvckbytes.playtime_rewards;
+package at.blvckbytes.playtime_rewards.placeholder;
 
 import at.blvckbytes.cm_mapper.ConfigKeeper;
 import at.blvckbytes.component_markup.expression.interpreter.InterpretationEnvironment;
@@ -41,9 +41,33 @@ public class PlaytimePlaceholderExpansion extends PlaceholderExpansion {
     return plugin.getPluginMeta().getVersion();
   }
 
+  private @Nullable CalendarBucket tryParseCalendarBucket(String input) {
+    return switch (input) {
+      case "day" -> CalendarBucket.DAY;
+      case "week" -> CalendarBucket.WEEK;
+      case "month" -> CalendarBucket.MONTH;
+      case "year" -> CalendarBucket.YEAR;
+      default -> null;
+    };
+  }
+
   @Override
   public @Nullable String onRequest(OfflinePlayer player, @NotNull String params) {
     var args = params.split("_");
+
+    if (args.length == 2 && args[0].equals("calendar")) {
+      var calendarBucket = tryParseCalendarBucket(args[1]);
+
+      if (calendarBucket == null)
+        return null;
+
+      return (switch (calendarBucket) {
+        case DAY -> config.rootSection.placeholders.calendarDay;
+        case WEEK -> config.rootSection.placeholders.calendarWeek;
+        case MONTH -> config.rootSection.placeholders.calendarMonth;
+        case YEAR -> config.rootSection.placeholders.calendarYear;
+      }).asPlainString(null);
+    }
 
     if (args.length < 2)
       return null;
@@ -66,21 +90,15 @@ public class PlaytimePlaceholderExpansion extends PlaceholderExpansion {
       return tryAccessTopStatistic(userData, args, TopListType.TOTAL, timeType);
     }
 
-    var bucketType = switch (args[1]) {
-      case "day" -> CalendarBucket.DAY;
-      case "week" -> CalendarBucket.WEEK;
-      case "month" -> CalendarBucket.MONTH;
-      case "year" -> CalendarBucket.YEAR;
-      default -> null;
-    };
+    var calendarBucket = tryParseCalendarBucket(args[1]);
 
-    if (bucketType == null)
+    if (calendarBucket == null)
       return null;
 
     if (args.length == 2)
-      return formatTime(userData.getCalendarBucketTimeTicks(bucketType, timeType));
+      return formatTime(userData.getCalendarBucketTimeTicks(calendarBucket, timeType));
 
-    return tryAccessTopStatistic(userData, args, bucketType.getTopListType(), timeType);
+    return tryAccessTopStatistic(userData, args, calendarBucket.getTopListType(), timeType);
   }
 
   private @Nullable String tryAccessTopStatistic(UserData userData, String[] args, TopListType topListType, TimeType timeType) {
@@ -139,7 +157,7 @@ public class PlaytimePlaceholderExpansion extends PlaceholderExpansion {
   }
 
   private String formatTime(long input) {
-    return config.rootSection.placeholderTime.asPlainString(
+    return config.rootSection.placeholders.timeFormat.asPlainString(
       new InterpretationEnvironment()
         .withVariable("time", input)
     );
