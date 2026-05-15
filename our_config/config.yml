@@ -1,5 +1,6 @@
 # This is a partial config, containing only the difference between the default-setup and ours.
-
+placeholders:
+  timeFormat: '<duration [value]="time / 20.0 * 1000.0" units="hd" zeroes="h" unit-renderer={&#97FFFF{long(value)}&#97c6ff{unit}} />'
 ranks:
   siedler:
     requiredPlayTime: 1d
@@ -56,7 +57,7 @@ ranks:
         name: '<reset><&8>» {lut.rank_prefix.aristokrat} <&8>«'
         lore: '<reset><$lut.rank_description.aristokrat>'
 cLut:
-  uprank_broadcast: '{lut.prefix} <&7>Der Spieler <&6>{player_name} <&7>hat den {rank_prefix}-Rang nach Erreichen einer Spielzeit von <&6><$lut.time_format [time]="required_time" /> <&7>erhalten!'
+  uprank_broadcast: '<&c><&l>[Info]</> <#90EE90>{player_name} ist jetzt {rank_prefix}! Glückwunsch <&c>♥'
   required_time_section: |
     <&d>Benötigte Spielzeit: <&e><$lut.time_format [time]="required_time" />, ohne AFK-Zeit!<br/>
     <br/>
